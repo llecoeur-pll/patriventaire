@@ -1,0 +1,5 @@
+.env
+app/patriventaire/settings_local.py
+.venv/
+__pycache__/
+*.pyc
