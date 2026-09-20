@@ -68,3 +68,217 @@ A la validation d'un élément :
 
 
 
+
+---
+
+# Identité visuelle
+
+L'identité de l'application repose sur deux éléments forts du logo :
+
+🟢 Le territoire, la nature et le patrimoine représentés par le vert.
+
+🔵 L'eau, les lacs et l'Orne représentés par le bleu.
+
+L'interface doit rester sobre et privilégier l'efficacité d'usage plutôt que les effets graphiques.
+
+---
+
+# Palette de couleurs
+
+## Couleur principale
+
+Vert territorial inspiré du logo.
+
+```css
+--primary: #78BE00;
+
+Utilisations
+Boutons principaux
+Menus actifs
+Liens importants
+Icônes principales
+Titres de sections
+Couleur secondaire
+
+Bleu inspiré de la rivière et des lacs.
+
+--secondary: #169AEF;
+
+Utilisations
+Actions secondaires
+Navigation
+Informations
+Éléments interactifs
+Couleur d'accent
+
+Vert foncé.
+
+--accent: #009933;
+
+Utilisations
+Survol de boutons
+Validation
+Mise en avant
+Couleurs neutres
+--background: #F8FAFB;
+--surface: #FFFFFF;
+--text: #263238;
+--text-light: #607D8B;
+--border: #DCE3E7;
+
+Couleurs fonctionnelles
+Succès
+--success: #2E7D32;
+
+Information
+--info: #169AEF;
+
+Attention
+--warning: #F4B400;
+
+Erreur
+--danger: #D93025;
+
+Typographie
+Police principale
+Inter
+
+Police moderne, extrêmement lisible sur ordinateur, tablette et téléphone.
+
+Import CSS :
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+Police de secours
+font-family:
+    "Inter",
+    "Roboto",
+    "Segoe UI",
+    sans-serif;
+
+Hiérarchie typographique
+Titre principal
+font-size: 32px;
+font-weight: 700;
+line-height: 1.2;
+
+Titre de page
+font-size: 24px;
+font-weight: 600;
+
+Titre de section
+font-size: 18px;
+font-weight: 600;
+
+Texte courant
+font-size: 16px;
+font-weight: 400;
+line-height: 1.5;
+
+Texte secondaire
+font-size: 14px;
+font-weight: 400;
+color: var(--text-light);
+
+Styles CSS de référence
+Variables globales
+:root {
+
+  --primary: #78BE00;
+  --secondary: #169AEF;
+  --accent: #009933;
+
+  --background: #F8FAFB;
+  --surface: #FFFFFF;
+
+  --text: #263238;
+  --text-light: #607D8B;
+
+  --border: #DCE3E7;
+
+  --success: #2E7D32;
+  --warning: #F4B400;
+  --danger: #D93025;
+}
+
+Boutons
+Bouton principal
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+Survol
+.btn-primary:hover {
+    background: var(--accent);
+}
+
+Bouton secondaire
+.btn-secondary {
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+}
+
+Cartes
+
+Toutes les fonctionnalités citoyennes doivent être présentées sous forme de cartes.
+
+.card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+Formulaires
+input,
+select,
+textarea {
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    padding: 12px;
+
+    font-size: 16px;
+
+    width: 100%;
+}
+
+Focus
+input:focus,
+textarea:focus {
+
+    outline: none;
+
+    border-color: var(--secondary);
+
+    box-shadow: 0 0 0 3px rgba(22,154,239,0.15);
+}
+
+Navigation
+Barre supérieure
+.header {
+    background: white;
+    border-bottom: 1px solid var(--border);
+}
+
+Menu actif
+.menu-active {
+
+    color: var(--primary);
+
+    border-bottom: 3px solid var(--primary);
+}
+
+
