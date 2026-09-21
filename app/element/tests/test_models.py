@@ -1,6 +1,8 @@
 """Tests for the element models."""
 
 from django.core.exceptions import ValidationError
+from django.test import override_settings
+
 from ..models import Element, Photographie
 from .utils import MediaTestCase, element_data, image_upload
 
@@ -30,3 +32,21 @@ class ElementModelTests(MediaTestCase):
 		element.delete()
 
 		self.assertFalse(Photographie.objects.exists())
+
+	def test_photos_use_configured_directory_and_random_names(self) -> None:
+		element = Element.objects.create(**element_data())
+
+		with override_settings(PHOTO_UPLOAD_DIR="custom-photos"):
+			first_photo = Photographie.objects.create(
+				element=element,
+				fichier=image_upload(),
+			)
+			second_photo = Photographie.objects.create(
+				element=element,
+				fichier=image_upload(),
+			)
+
+		self.assertTrue(first_photo.fichier.name.startswith("custom-photos/"))
+		self.assertTrue(second_photo.fichier.name.startswith("custom-photos/"))
+		self.assertTrue(first_photo.fichier.name.endswith(".png"))
+		self.assertNotEqual(first_photo.fichier.name, second_photo.fichier.name)

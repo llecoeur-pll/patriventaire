@@ -5,7 +5,9 @@ from __future__ import annotations
 import secrets
 from datetime import datetime
 from decimal import Decimal
+from pathlib import Path
 
+from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -14,6 +16,13 @@ def generate_edit_token() -> str:
 	"""Return a cryptographically secure token for editing an element."""
 
 	return secrets.token_urlsafe(32)
+
+
+def photo_upload_to(instance: "Photographie", filename: str) -> str:
+	"""Return a configurable directory and a unique random image filename."""
+
+	extension = Path(filename).suffix.lower()
+	return f"{settings.PHOTO_UPLOAD_DIR}/{secrets.token_urlsafe(24)}{extension}"
 
 
 class Element(models.Model):
@@ -159,7 +168,7 @@ class Photographie(models.Model):
 		verbose_name="élément de patrimoine",
 	)
 	fichier: str = models.ImageField(
-		upload_to="elements/%Y/%m/%d/",
+		upload_to=photo_upload_to,
 		verbose_name="fichier image",
 	)
 	commentaire: str = models.TextField(
