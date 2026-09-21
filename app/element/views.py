@@ -55,6 +55,16 @@ def ajouter_element(request: HttpRequest) -> HttpResponse:
 	return render(request, "element/ajouter.html", context)
 
 
+def carte(request: HttpRequest) -> HttpResponse:
+	"""Display the map page for public heritage elements."""
+
+	return render(
+		request,
+		"element/carte.html",
+		{"existing_elements": _map_elements_data()},
+	)
+
+
 def consulter_element(request: HttpRequest, numero: int) -> HttpResponse:
 	"""Display an element using its public number."""
 

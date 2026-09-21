@@ -8,11 +8,30 @@ from .utils import MediaTestCase, element_data, form_data, image_upload
 
 
 class AjouterElementViewTests(MediaTestCase):
+	def test_map_page_is_displayed(self) -> None:
+		response = self.client.get(reverse("element:carte"))
+
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "<h1>Carte</h1>", html=True)
+		self.assertContains(response, 'id="map-widget"')
+		self.assertContains(response, "openstreetmap.org")
+		self.assertContains(response, "existing-elements-data")
+
+	def test_map_contains_existing_public_elements(self) -> None:
+		element = Element.objects.create(**element_data())
+		Photographie.objects.create(element=element, fichier=image_upload())
+
+		response = self.client.get(reverse("element:carte"))
+
+		self.assertContains(response, element.libelle)
+		self.assertContains(response, "photo_url")
+
 	def test_index_displays_the_element_form(self) -> None:
 		response = self.client.get(reverse("element:index"))
 
 		self.assertEqual(response.status_code, 200)
-		self.assertContains(response, "Ajouter un élément de patrimoine")
+		self.assertContains(response, "<h1>Carte</h1>", html=True)
+		self.assertContains(response, 'id="map-widget"')
 
 	def test_form_is_displayed(self) -> None:
 		response = self.client.get(reverse("element:ajouter"))

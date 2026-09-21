@@ -35,17 +35,58 @@
             <legend>Photographies</legend>
             {{ photographie_formset.management_form }}
             {{ photographie_formset.non_form_errors }}
-            {% for photo_form in photographie_formset %}
-                <div>
-                    {% for field in photo_form %}
-                        <p>
-                            {{ field.label_tag }}
-                            {{ field }}
+            <p id="photo-dropzone" class="photo-dropzone" tabindex="0" role="button"
+               aria-controls="photo-picker" aria-describedby="photo-dropzone-help">
+                <strong>Déposez vos photos ici</strong> ou cliquez pour les sélectionner
+                <small id="photo-dropzone-help">Vous pouvez ajouter plusieurs photos.</small>
+            </p>
+            <input id="photo-picker" class="d-none" type="file" accept="image/*" multiple>
+
+            <div id="photo-forms">
+                {% for photo_form in photographie_formset %}
+                    <div class="photo-form" data-photo-form{% if photo_form.instance.pk %} data-photo-selected="true"{% endif %}>
+                        {% for field in photo_form %}
+                            {% if field.name == "fichier" %}
+                                <div class="visually-hidden">
+                                    {{ field }}
+                                </div>
+                                {{ field.errors }}
+                            {% elif field.is_hidden %}
+                                {{ field }}
+                            {% else %}
+                                <p>
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                    {{ field.errors }}
+                                </p>
+                            {% endif %}
+                        {% endfor %}
+                        <div class="photo-preview" data-photo-preview></div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <template id="empty-photo-form">
+                <div class="photo-form" data-photo-form>
+                    {% for field in photographie_formset.empty_form %}
+                        {% if field.name == "fichier" %}
+                            <div class="visually-hidden">
+                                {{ field }}
+                            </div>
                             {{ field.errors }}
-                        </p>
+                        {% elif field.is_hidden %}
+                            {{ field }}
+                        {% else %}
+                            <p>
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {{ field.errors }}
+                            </p>
+                        {% endif %}
                     {% endfor %}
+                    <div class="photo-preview" data-photo-preview></div>
                 </div>
-            {% endfor %}
+            </template>
         </fieldset>
 
         <button class="btn btn-primary" type="submit">
@@ -58,6 +99,89 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
+        (() => {
+            const dropzone = document.getElementById("photo-dropzone");
+            const picker = document.getElementById("photo-picker");
+            const formsContainer = document.getElementById("photo-forms");
+            const emptyFormTemplate = document.getElementById("empty-photo-form");
+            const totalFormsInput = document.getElementById(
+                "id_{{ photographie_formset.prefix }}-TOTAL_FORMS"
+            );
+
+            const updatePreview = (form, file) => {
+                const preview = form.querySelector("[data-photo-preview]");
+                preview.replaceChildren();
+                const image = document.createElement("img");
+                image.alt = file.name;
+                image.className = "photo-preview-image";
+                image.src = URL.createObjectURL(file);
+                image.addEventListener("load", () => URL.revokeObjectURL(image.src), {
+                    once: true,
+                });
+                preview.append(image);
+                const filename = document.createElement("span");
+                filename.textContent = file.name;
+                preview.append(filename);
+            };
+
+            const emptyPhotoForm = () => {
+                const form = formsContainer.querySelector(
+                    "[data-photo-form]:not([data-photo-selected])"
+                );
+                return form || addPhotoForm();
+            };
+
+            const addPhotoForm = () => {
+                const index = Number(totalFormsInput.value);
+                const fragment = emptyFormTemplate.content.cloneNode(true);
+                const form = fragment.querySelector("[data-photo-form]");
+                form.innerHTML = form.innerHTML.replaceAll("__prefix__", index);
+                formsContainer.append(form);
+                totalFormsInput.value = index + 1;
+                return form;
+            };
+
+            const assignFiles = (files) => {
+                Array.from(files).forEach((file) => {
+                    if (!file.type.startsWith("image/")) {
+                        return;
+                    }
+                    const form = emptyPhotoForm();
+                    const input = form.querySelector('input[type="file"]');
+                    const transfer = new DataTransfer();
+                    transfer.items.add(file);
+                    input.files = transfer.files;
+                    form.dataset.photoSelected = "true";
+                    updatePreview(form, file);
+                });
+            };
+
+            ["dragenter", "dragover"].forEach((eventName) => {
+                dropzone.addEventListener(eventName, (event) => {
+                    event.preventDefault();
+                    dropzone.classList.add("is-dragging");
+                });
+            });
+            ["dragleave", "drop"].forEach((eventName) => {
+                dropzone.addEventListener(eventName, (event) => {
+                    event.preventDefault();
+                    dropzone.classList.remove("is-dragging");
+                });
+            });
+            dropzone.addEventListener("drop", (event) => assignFiles(event.dataTransfer.files));
+            dropzone.addEventListener("click", () => picker.click());
+            dropzone.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    picker.click();
+                }
+            });
+            picker.addEventListener("change", () => {
+                assignFiles(picker.files);
+                picker.value = "";
+            });
+        })();
+
         (() => {
             const mapElement = document.getElementById("map-widget");
             const latitudeInput = document.getElementById(mapElement.dataset.latitudeInput);

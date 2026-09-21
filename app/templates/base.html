@@ -13,7 +13,7 @@
     <link href="{% static 'styles.css' %}" rel="stylesheet">
     {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <header class="site-header">
         <nav class="container navbar navbar-expand-sm py-3" aria-label="Navigation principale">
             <a class="site-brand me-4" href="{% url 'element:index' %}">Patriventaire</a>
@@ -33,8 +33,8 @@
         </div>
     {% endif %}
 
-    <main class="container py-4 py-md-5">
-        <section class="page-card p-4 p-md-5">
+    <main class="container py-4 py-md-5 {% block main_class %}{% endblock %}">
+        <section class="page-card p-4 p-md-5 {% block section_class %}{% endblock %}">
             {% block content %}{% endblock %}
         </section>
     </main>

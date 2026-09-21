@@ -27,6 +27,45 @@ body {
     line-height: 1.5;
 }
 
+body.map-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.map-page .map-main {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+    width: 100%;
+}
+
+.map-page .map-section {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    padding: 0 !important;
+}
+
+.map-page .map-section h1 {
+    position: absolute;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 1px;
+}
+
+.map-page .site-footer {
+    display: none;
+}
+
 .site-header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
@@ -109,6 +148,68 @@ textarea:focus {
     border-radius: 8px;
     height: 360px;
     overflow: hidden;
+}
+
+.map-page #map-widget {
+    border: 0;
+    border-radius: 0;
+    flex: 1;
+    height: auto;
+    min-height: 0;
+    width: 100%;
+}
+
+.photo-dropzone {
+    align-items: center;
+    background: #f2f8ec;
+    border: 2px dashed var(--primary);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    justify-content: center;
+    margin: 1rem 0;
+    min-height: 140px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.photo-dropzone:hover,
+.photo-dropzone:focus,
+.photo-dropzone.is-dragging {
+    background: #e6f4d8;
+    border-color: var(--accent);
+    outline: none;
+}
+
+.photo-dropzone small {
+    color: var(--text-light);
+}
+
+.photo-form {
+    border-top: 1px solid var(--border);
+    padding: 1rem 0;
+}
+
+.photo-form input[type="file"] {
+    padding: 0.5rem;
+}
+
+.photo-preview {
+    align-items: center;
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.photo-preview-image {
+    border-radius: 6px;
+    height: 72px;
+    object-fit: cover;
+    width: 72px;
 }
 
 .heritage-pin-wrapper {

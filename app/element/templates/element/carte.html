@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Carte{% endblock %}
+
+{% block body_class %}map-page{% endblock %}
+
+{% block main_class %}map-main{% endblock %}
+
+{% block section_class %}map-section{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
+{% block content %}
+    <h1>Carte</h1>
+    <div id="map-widget" aria-label="Carte des éléments de patrimoine"></div>
+    {{ existing_elements|json_script:"existing-elements-data" }}
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        (() => {
+            const mapElement = document.getElementById("map-widget");
+            const existingElements = JSON.parse(
+                document.getElementById("existing-elements-data").textContent
+            );
+            const defaultPosition = [48.75, -0.25];
+            const map = L.map(mapElement).setView(defaultPosition, 12);
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: "&copy; OpenStreetMap contributors",
+                maxZoom: 19,
+                referrerPolicy: "strict-origin-when-cross-origin",
+            }).addTo(map);
+
+            existingElements.forEach((element) => {
+                const pin = L.divIcon({
+                    className: "heritage-pin-wrapper",
+                    html: `<span class="heritage-pin" style="--pin-color: ${element.categorie_couleur};">${element.categorie_icone}</span>`,
+                    iconSize: [24, 32],
+                    iconAnchor: [12, 32],
+                    popupAnchor: [0, -32],
+                });
+                const marker = L.marker(
+                    [element.latitude, element.longitude],
+                    { icon: pin }
+                ).addTo(map);
+                const popup = document.createElement("div");
+                if (element.photo_url) {
+                    const image = document.createElement("img");
+                    image.src = element.photo_url;
+                    image.alt = element.libelle;
+                    image.className = "heritage-popup-image";
+                    popup.append(image);
+                }
+                const title = document.createElement("strong");
+                title.textContent = `${element.categorie_icone} ${element.libelle}`;
+                const details = document.createElement("div");
+                details.textContent = `${element.categorie} - N° ${element.numero}`;
+                const link = document.createElement("a");
+                link.href = `/element/${element.numero}/`;
+                link.textContent = "Consulter la fiche";
+                link.className = "d-block mt-2";
+                popup.append(title, details, link);
+                marker.bindPopup(popup);
+            });
+        })();
+    </script>
+{% endblock %}
