@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ element.libelle }}</title>
-</head>
-<body>
-    <main>
+{% extends "base.html" %}
+
+{% block title %}{{ element.libelle }}{% endblock %}
+
+{% block content %}
         <h1>{{ element.libelle }}</h1>
         <p>Numéro : {{ element.numero }}</p>
         <p>Catégorie : {{ element.get_categorie_display }}</p>
@@ -21,6 +17,4 @@
                 {% if photographie.commentaire %}<figcaption>{{ photographie.commentaire }}</figcaption>{% endif %}
             </figure>
         {% endfor %}
-    </main>
-</body>
-</html>
+{% endblock %}

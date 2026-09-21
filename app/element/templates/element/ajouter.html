@@ -1,44 +1,38 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ page_title|default:"Ajouter un élément de patrimoine" }}</title>
-</head>
-<body>
-    <main>
-        <h1>{{ page_title|default:"Ajouter un élément de patrimoine" }}</h1>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ element_form.non_field_errors }}
-            {% for field in element_form %}
-                <p>
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {{ field.errors }}
-                    {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
-                </p>
+{% extends "base.html" %}
+
+{% block title %}{{ page_title|default:"Ajouter un élément de patrimoine" }}{% endblock %}
+
+{% block content %}
+    <h1>{{ page_title|default:"Ajouter un élément de patrimoine" }}</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ element_form.non_field_errors }}
+        {% for field in element_form %}
+            <p>
+                {{ field.label_tag }}
+                {{ field }}
+                {{ field.errors }}
+                {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+            </p>
+        {% endfor %}
+
+        <fieldset>
+            <legend>Photographies</legend>
+            {{ photographie_formset.management_form }}
+            {{ photographie_formset.non_form_errors }}
+            {% for photo_form in photographie_formset %}
+                <div>
+                    {% for field in photo_form %}
+                        <p>
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {{ field.errors }}
+                        </p>
+                    {% endfor %}
+                </div>
             {% endfor %}
+        </fieldset>
 
-            <fieldset>
-                <legend>Photographies</legend>
-                {{ photographie_formset.management_form }}
-                {{ photographie_formset.non_form_errors }}
-                {% for photo_form in photographie_formset %}
-                    <div>
-                        {% for field in photo_form %}
-                            <p>
-                                {{ field.label_tag }}
-                                {{ field }}
-                                {{ field.errors }}
-                            </p>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-            </fieldset>
-
-            <button type="submit">{{ submit_label|default:"Ajouter l'élément" }}</button>
-        </form>
-    </main>
-</body>
-</html>
+        <button type="submit">{{ submit_label|default:"Ajouter l'élément" }}</button>
+    </form>
+{% endblock %}

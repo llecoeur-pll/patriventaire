@@ -1,0 +1,105 @@
+:root {
+    --primary: #78BE00;
+    --secondary: #169AEF;
+    --accent: #009933;
+    --background: #F8FAFB;
+    --surface: #FFFFFF;
+    --text: #263238;
+    --text-light: #607D8B;
+    --border: #DCE3E7;
+    --success: #2E7D32;
+    --warning: #F4B400;
+    --danger: #D93025;
+    --bs-primary: var(--primary);
+    --bs-primary-rgb: 120, 190, 0;
+    --bs-body-bg: var(--background);
+    --bs-body-color: var(--text);
+    --bs-border-color: var(--border);
+    --bs-link-color: var(--accent);
+    --bs-link-hover-color: var(--secondary);
+}
+
+body {
+    background: var(--background);
+    color: var(--text);
+    font-family: "Inter", "Roboto", "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.site-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.site-brand {
+    color: var(--accent);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.site-nav-link {
+    color: var(--text-light);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.site-nav-link:hover,
+.site-nav-link:focus {
+    color: var(--accent);
+}
+
+.page-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+h1,
+h2,
+h3 {
+    color: var(--text);
+    font-weight: 600;
+}
+
+label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-sizing: border-box;
+    font: inherit;
+    padding: 12px;
+    width: 100%;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(22, 154, 239, 0.15);
+    outline: none;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--primary);
+    --bs-btn-border-color: var(--primary);
+    --bs-btn-hover-bg: var(--accent);
+    --bs-btn-hover-border-color: var(--accent);
+    --bs-btn-active-bg: var(--accent);
+    --bs-btn-active-border-color: var(--accent);
+    color: #fff;
+    font-weight: 600;
+}
+
+.site-footer {
+    color: var(--text-light);
+    font-size: 0.875rem;
+}

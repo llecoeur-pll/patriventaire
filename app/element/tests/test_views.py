@@ -1,0 +1,121 @@
+"""Tests for the element views."""
+
+from django.core import mail
+from django.urls import reverse
+
+from ..models import Element, Photographie
+from .utils import MediaTestCase, element_data, form_data, image_upload
+
+
+class AjouterElementViewTests(MediaTestCase):
+	def test_index_displays_the_element_form(self) -> None:
+		response = self.client.get(reverse("element:index"))
+
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "Ajouter un élément de patrimoine")
+
+	def test_form_is_displayed(self) -> None:
+		response = self.client.get(reverse("element:ajouter"))
+
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "Ajouter un élément de patrimoine")
+		self.assertContains(response, "photographies-TOTAL_FORMS")
+
+	def test_element_requires_a_photograph(self) -> None:
+		response = self.client.post(
+			reverse("element:ajouter"),
+			form_data(
+				**{
+					"photographies-TOTAL_FORMS": "1",
+					"photographies-INITIAL_FORMS": "0",
+					"photographies-MIN_NUM_FORMS": "0",
+					"photographies-MAX_NUM_FORMS": "1000",
+				}
+			),
+		)
+
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "Ajoutez au moins une photographie")
+		self.assertFalse(Element.objects.exists())
+
+	def test_element_and_photograph_are_created(self) -> None:
+		data = form_data(
+			**{
+				"photographies-TOTAL_FORMS": "1",
+				"photographies-INITIAL_FORMS": "0",
+				"photographies-MIN_NUM_FORMS": "0",
+				"photographies-MAX_NUM_FORMS": "1000",
+			}
+		)
+		data.update(
+			{
+				"photographies-0-fichier": image_upload(),
+				"photographies-0-commentaire": "Vue principale",
+			}
+		)
+		response = self.client.post(reverse("element:ajouter"), data)
+
+		self.assertRedirects(
+			response,
+			reverse("element:ajouter"),
+			fetch_redirect_response=False,
+		)
+		self.assertEqual(Element.objects.count(), 1)
+		self.assertEqual(Photographie.objects.count(), 1)
+
+	def test_creation_sends_links_and_prefills_next_form(self) -> None:
+		data = form_data(
+			**{
+				"photographies-TOTAL_FORMS": "1",
+				"photographies-INITIAL_FORMS": "0",
+				"photographies-MIN_NUM_FORMS": "0",
+				"photographies-MAX_NUM_FORMS": "1000",
+			}
+		)
+		data["photographies-0-fichier"] = image_upload()
+
+		response = self.client.post(reverse("element:ajouter"), data)
+		element = Element.objects.get()
+
+		self.assertRedirects(
+			response,
+			reverse("element:ajouter"),
+			fetch_redirect_response=False,
+		)
+		self.assertEqual(len(mail.outbox), 1)
+		self.assertIn(
+			reverse("element:consulter", kwargs={"numero": element.numero}),
+			mail.outbox[0].body,
+		)
+		self.assertIn(
+			reverse(
+				"element:modifier",
+				kwargs={"jeton_ecriture": element.jeton_ecriture},
+			),
+			mail.outbox[0].body,
+		)
+
+		follow_up = self.client.get(response.url)
+
+		self.assertContains(follow_up, 'value="Alex Martin"')
+		self.assertContains(follow_up, 'value="alex@example.com"')
+		self.assertContains(follow_up, 'value="0600000000"')
+		self.assertContains(follow_up, 'value="Rabodanges"')
+
+	def test_element_can_be_viewed_by_number_and_edited_by_token(self) -> None:
+		element = Element.objects.create(**element_data())
+
+		read_response = self.client.get(
+			reverse("element:consulter", kwargs={"numero": element.numero})
+		)
+		edit_response = self.client.get(
+			reverse(
+				"element:modifier",
+				kwargs={"jeton_ecriture": element.jeton_ecriture},
+			)
+		)
+
+		self.assertEqual(read_response.status_code, 200)
+		self.assertContains(read_response, element.libelle)
+		self.assertEqual(edit_response.status_code, 200)
+		self.assertContains(edit_response, "Modifier un élément de patrimoine")
