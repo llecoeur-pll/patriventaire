@@ -20,6 +20,28 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertEqual(response.status_code, 200)
 		self.assertContains(response, "Ajouter un élément de patrimoine")
 		self.assertContains(response, "photographies-TOTAL_FORMS")
+		self.assertContains(response, 'id="map-widget"')
+		self.assertContains(response, "openstreetmap.org")
+		self.assertContains(response, 'name="referrer"')
+		self.assertContains(response, "strict-origin-when-cross-origin")
+		self.assertContains(response, "referrerPolicy")
+		self.assertContains(response, 'type="hidden" name="latitude"')
+		self.assertContains(response, 'type="hidden" name="longitude"')
+		self.assertContains(response, "existing-elements-data")
+		self.assertContains(response, "🌊 Mare")
+		self.assertContains(response, "🧼 Lavoir")
+
+	def test_map_contains_existing_public_elements(self) -> None:
+		element = Element.objects.create(**element_data())
+		Photographie.objects.create(element=element, fichier=image_upload())
+
+		response = self.client.get(reverse("element:ajouter"))
+
+		self.assertContains(response, "Ancien lavoir")
+		self.assertContains(response, "Lavoir")
+		self.assertContains(response, "categorie_icone")
+		self.assertContains(response, "photo_url")
+		self.assertContains(response, "/media/photos/")
 
 	def test_element_requires_a_photograph(self) -> None:
 		response = self.client.post(
@@ -97,6 +119,11 @@ class AjouterElementViewTests(MediaTestCase):
 
 		follow_up = self.client.get(response.url)
 
+		self.assertContains(
+			follow_up,
+			"L'élément a bien été ajouté. Un mail de confirmation a été envoyé.",
+			html=True,
+		)
 		self.assertContains(follow_up, 'value="Alex Martin"')
 		self.assertContains(follow_up, 'value="alex@example.com"')
 		self.assertContains(follow_up, 'value="0600000000"')

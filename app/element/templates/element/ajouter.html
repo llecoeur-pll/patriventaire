@@ -2,19 +2,34 @@
 
 {% block title %}{{ page_title|default:"Ajouter un élément de patrimoine" }}{% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
 {% block content %}
     <h1>{{ page_title|default:"Ajouter un élément de patrimoine" }}</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ element_form.non_field_errors }}
         {% for field in element_form %}
-            <p>
-                {{ field.label_tag }}
-                {{ field }}
-                {{ field.errors }}
-                {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
-            </p>
+            {% if field.name == "latitude" or field.name == "longitude" %}
+                {{ field.as_hidden }}
+            {% else %}
+                <p>
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {{ field.errors }}
+                    {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                </p>
+            {% endif %}
         {% endfor %}
+
+        <div class="mb-4">
+            <h2 class="h5">Localiser l'élément</h2>
+            <p class="text-secondary">Cliquez sur la carte pour renseigner les coordonnées GPS.</p>
+            <div id="map-widget" data-latitude-input="id_latitude" data-longitude-input="id_longitude"></div>
+            {{ existing_elements|json_script:"existing-elements-data" }}
+        </div>
 
         <fieldset>
             <legend>Photographies</legend>
@@ -35,4 +50,115 @@
 
         <button type="submit">{{ submit_label|default:"Ajouter l'élément" }}</button>
     </form>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        (() => {
+            const mapElement = document.getElementById("map-widget");
+            const latitudeInput = document.getElementById(mapElement.dataset.latitudeInput);
+            const longitudeInput = document.getElementById(mapElement.dataset.longitudeInput);
+            const existingElements = JSON.parse(
+                document.getElementById("existing-elements-data").textContent
+            );
+            const defaultPosition = [48.75, -0.25];
+
+            Vue.createApp({
+                data() {
+                    return {
+                        latitude: Number.parseFloat(latitudeInput.value) || defaultPosition[0],
+                        longitude: Number.parseFloat(longitudeInput.value) || defaultPosition[1],
+                        map: null,
+                        marker: null,
+                        syncInputsHandler: null,
+                    };
+                },
+
+                mounted() {
+                    this.map = L.map(mapElement).setView(
+                        [this.latitude, this.longitude],
+                        13
+                    );
+                    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                        attribution: "&copy; OpenStreetMap contributors",
+                        maxZoom: 19,
+                        referrerPolicy: "strict-origin-when-cross-origin",
+                    }).addTo(this.map);
+                    this.marker = L.marker([this.latitude, this.longitude]).addTo(this.map);
+
+                    existingElements.forEach((element) => {
+                        const pin = L.divIcon({
+                            className: "heritage-pin-wrapper",
+                            html: `<span class="heritage-pin" style="--pin-color: ${element.categorie_couleur};">${element.categorie_icone}</span>`,
+                            iconSize: [24, 32],
+                            iconAnchor: [12, 32],
+                            popupAnchor: [0, -32],
+                        });
+                        const existingMarker = L.marker(
+                            [element.latitude, element.longitude],
+                            { icon: pin }
+                        ).addTo(this.map);
+                        const popup = document.createElement("div");
+                        const title = document.createElement("strong");
+                        title.textContent = `${element.categorie_icone} ${element.libelle}`;
+                        const details = document.createElement("div");
+                        details.textContent = `${element.categorie} - N° ${element.numero}`;
+                        popup.append(title, details);
+                        if (element.photo_url) {
+                            const image = document.createElement("img");
+                            image.src = element.photo_url;
+                            image.alt = element.libelle;
+                            image.className = "heritage-popup-image";
+                            popup.prepend(image);
+                        }
+                        existingMarker.bindPopup(popup);
+                    });
+
+                    this.map.on("click", (event) => {
+                        this.setPosition(event.latlng.lat, event.latlng.lng);
+                    });
+                    this.syncInputsHandler = () => this.syncFromInputs();
+                    latitudeInput.addEventListener("input", this.syncInputsHandler);
+                    longitudeInput.addEventListener("input", this.syncInputsHandler);
+                },
+                beforeUnmount() {
+                    latitudeInput.removeEventListener("input", this.syncInputsHandler);
+                    longitudeInput.removeEventListener("input", this.syncInputsHandler);
+                    if (this.map) {
+                        this.map.remove();
+                    }
+                },
+                methods: {
+                    setPosition(latitude, longitude) {
+                        this.latitude = Number(latitude.toFixed(6));
+                        this.longitude = Number(longitude.toFixed(6));
+                        latitudeInput.value = this.latitude.toFixed(6);
+                        longitudeInput.value = this.longitude.toFixed(6);
+                        latitudeInput.dispatchEvent(new Event("input", { bubbles: true }));
+                        longitudeInput.dispatchEvent(new Event("input", { bubbles: true }));
+                        this.marker.setLatLng([this.latitude, this.longitude]);
+                    },
+                    syncFromInputs() {
+                        const latitude = Number.parseFloat(latitudeInput.value);
+                        const longitude = Number.parseFloat(longitudeInput.value);
+                        if (
+                            Number.isFinite(latitude)
+                            && Number.isFinite(longitude)
+                            && latitude >= -90
+                            && latitude <= 90
+                            && longitude >= -180
+                            && longitude <= 180
+                        ) {
+                            this.latitude = latitude;
+                            this.longitude = longitude;
+                            this.marker.setLatLng([latitude, longitude]);
+                            this.map.panTo([latitude, longitude]);
+                        }
+                    },
+                },
+            }).mount(mapElement);
+        })();
+    </script>
 {% endblock %}

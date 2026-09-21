@@ -5,7 +5,7 @@
 {% block content %}
         <h1>{{ element.libelle }}</h1>
         <p>Numéro : {{ element.numero }}</p>
-        <p>Catégorie : {{ element.get_categorie_display }}</p>
+        <p>Catégorie : {{ element.categorie.icone }} {{ element.categorie.libelle }}</p>
         <p>Commune : {{ element.get_commune_deleguee_display }}</p>
         <p>Coordonnées : {{ element.latitude }}, {{ element.longitude }}</p>
         <p>{{ element.description }}</p>

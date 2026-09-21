@@ -6,6 +6,7 @@ from typing import Any
 
 from django.core.mail import send_mail
 from django.db import transaction
+from django.contrib import messages
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -29,6 +30,10 @@ def ajouter_element(request: HttpRequest) -> HttpResponse:
 				photographie_formset.instance = element
 				photographie_formset.save()
 			_send_confirmation_email(request, element)
+			messages.success(
+				request,
+				"L'élément a bien été ajouté. Un mail de confirmation a été envoyé."
+			)
 			request.session["element_form_initial"] = {
 				"nom_deposant": element.nom_deposant,
 				"courriel_deposant": element.courriel_deposant,
@@ -45,6 +50,7 @@ def ajouter_element(request: HttpRequest) -> HttpResponse:
 	context: dict[str, Any] = {
 		"element_form": element_form,
 		"photographie_formset": photographie_formset,
+		"existing_elements": _map_elements_data(),
 	}
 	return render(request, "element/ajouter.html", context)
 
@@ -115,3 +121,24 @@ def _send_confirmation_email(request: HttpRequest, element: Element) -> None:
 		recipient_list=[element.courriel_deposant],
 		fail_silently=False,
 	)
+
+
+def _map_elements_data() -> list[dict[str, Any]]:
+	"""Return public fields used to display existing elements on the map."""
+
+	map_elements = []
+	for element in Element.objects.prefetch_related("photographies").all():
+		photo = element.photographies.first()
+		map_elements.append(
+			{
+				"numero": element.numero,
+				"libelle": element.libelle,
+				"categorie": element.categorie.libelle,
+				"categorie_icone": element.categorie.icone,
+				"categorie_couleur": element.categorie.couleur,
+				"latitude": float(element.latitude),
+				"longitude": float(element.longitude),
+				"photo_url": photo.fichier.url if photo else None,
+			}
+		)
+	return map_elements

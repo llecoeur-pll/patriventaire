@@ -3,7 +3,7 @@
 from django.core.exceptions import ValidationError
 from django.test import override_settings
 
-from ..models import Element, Photographie
+from ..models import Categorie, Element, Photographie
 from .utils import MediaTestCase, element_data, image_upload
 
 
@@ -50,3 +50,21 @@ class ElementModelTests(MediaTestCase):
 		self.assertTrue(second_photo.fichier.name.startswith("custom-photos/"))
 		self.assertTrue(first_photo.fichier.name.endswith(".png"))
 		self.assertNotEqual(first_photo.fichier.name, second_photo.fichier.name)
+
+
+class CategorieModelTests(MediaTestCase):
+	def test_migration_seeds_the_six_categories(self) -> None:
+		self.assertEqual(Categorie.objects.count(), 6)
+		self.assertEqual(
+			set(Categorie.objects.values_list("libelle", flat=True)),
+			{
+				"Mare",
+				"Puit ou fontaine",
+				"Ruine ou bâtisse ancienne",
+				"Lavoir",
+				"Arbre remarquable",
+				"Autre",
+			},
+		)
+		self.assertEqual(Categorie.objects.values_list("icone", flat=True).distinct().count(), 6)
+		self.assertEqual(Categorie.objects.values_list("couleur", flat=True).distinct().count(), 6)

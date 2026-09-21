@@ -28,19 +28,6 @@ def photo_upload_to(instance: "Photographie", filename: str) -> str:
 class Element(models.Model):
 	"""A heritage item submitted by a public user."""
 
-	class Category(models.TextChoices):
-		"""Categories available for a heritage item."""
-
-		MARE = "mare", "Mare"
-		PUITS_FONTAINE = "puit_fontaine", "Puit ou fontaine"
-		RUINE_BATISSE_ANCIENNE = (
-			"ruine_batisse_ancienne",
-			"Ruine ou Bâtisse ancienne",
-		)
-		LAVOIR = "lavoir", "Lavoir"
-		ARBRE_REMARQUABLE = "arbre_remarquable", "Arbre remarquable"
-		AUTRE = "autre", "Autre"
-
 	class Commune(models.TextChoices):
 		"""Communes deleguees covered by the inventory."""
 
@@ -83,9 +70,10 @@ class Element(models.Model):
 		blank=True,
 		verbose_name="téléphone du déposant",
 	)
-	categorie: str = models.CharField(
-		max_length=32,
-		choices=Category,
+	categorie: "Categorie" = models.ForeignKey(
+		"Categorie",
+		on_delete=models.PROTECT,
+		related_name="elements",
 		verbose_name="catégorie",
 	)
 	commune_deleguee: str = models.CharField(
@@ -152,6 +140,23 @@ class Element(models.Model):
 		"""Return a human-readable identifier."""
 
 		return f"{self.numero} - {self.libelle}"
+
+
+class Categorie(models.Model):
+	"""A category used to classify heritage elements."""
+
+	id: int = models.BigAutoField(primary_key=True)
+	libelle: str = models.CharField(max_length=100, unique=True, verbose_name="libellé")
+	icone: str = models.CharField(max_length=8, unique=True, verbose_name="icône")
+	couleur: str = models.CharField(max_length=7, unique=True, verbose_name="couleur")
+
+	class Meta:
+		ordering = ("libelle",)
+		verbose_name = "catégorie"
+		verbose_name_plural = "catégories"
+
+	def __str__(self) -> str:
+		return self.libelle
 
 
 class Photographie(models.Model):

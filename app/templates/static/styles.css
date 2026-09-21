@@ -103,3 +103,35 @@ textarea:focus {
     color: var(--text-light);
     font-size: 0.875rem;
 }
+
+#map-widget {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    height: 360px;
+    overflow: hidden;
+}
+
+.heritage-pin-wrapper {
+    background: transparent;
+    border: 0;
+}
+
+.heritage-pin {
+    background: var(--pin-color);
+    border: 2px solid #fff;
+    border-radius: 50% 50% 50% 0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    display: block;
+    height: 22px;
+    position: relative;
+    transform: rotate(-45deg);
+    width: 22px;
+}
+
+.heritage-popup-image {
+    display: block;
+    height: 120px;
+    margin-bottom: 0.5rem;
+    object-fit: cover;
+    width: 180px;
+}

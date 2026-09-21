@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 
-from ..models import Element
+from ..models import Categorie, Element
 
 
 class MediaTestCase(TestCase):
@@ -30,7 +30,7 @@ def element_data(**extra: object) -> dict[str, object]:
 		"nom_deposant": "Alex Martin",
 		"courriel_deposant": "alex@example.com",
 		"telephone_deposant": "0600000000",
-		"categorie": Element.Category.LAVOIR,
+		"categorie": Categorie.objects.get(libelle="Lavoir"),
 		"commune_deleguee": Element.Commune.RABODANGES,
 		"latitude": 48.75,
 		"longitude": -0.25,
@@ -47,7 +47,7 @@ def form_data(**extra: str) -> dict[str, str]:
 		"nom_deposant": "Alex Martin",
 		"courriel_deposant": "alex@example.com",
 		"telephone_deposant": "0600000000",
-		"categorie": Element.Category.LAVOIR,
+		"categorie": Categorie.objects.get(libelle="Lavoir").pk,
 		"commune_deleguee": Element.Commune.RABODANGES,
 		"latitude": "48.750000",
 		"longitude": "-0.250000",

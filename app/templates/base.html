@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <title>{% block title %}Patriventaire{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,6 +22,16 @@
             </div>
         </nav>
     </header>
+
+    {% if messages %}
+        <div class="container pt-4" aria-live="polite">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} mb-0" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <main class="container py-4 py-md-5">
         <section class="page-card p-4 p-md-5">

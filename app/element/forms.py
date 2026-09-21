@@ -11,6 +11,16 @@ from .models import Element, Photographie
 class ElementForm(forms.ModelForm):
 	"""Public form used to create a heritage element."""
 
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.fields["categorie"].choices = [
+			(
+				category.pk,
+				f"{category.icone} {category.libelle}",
+			)
+			for category in self.fields["categorie"].queryset
+		]
+
 	class Meta:
 		model = Element
 		fields = (

@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Categorie, Element, Photographie
+
+
+admin.site.register(Categorie)
+admin.site.register(Element)
+admin.site.register(Photographie)
