@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ element.libelle }}</title>
+</head>
+<body>
+    <main>
+        <h1>{{ element.libelle }}</h1>
+        <p>Numéro : {{ element.numero }}</p>
+        <p>Catégorie : {{ element.get_categorie_display }}</p>
+        <p>Commune : {{ element.get_commune_deleguee_display }}</p>
+        <p>Coordonnées : {{ element.latitude }}, {{ element.longitude }}</p>
+        <p>{{ element.description }}</p>
+        {% if element.histoire %}<p>{{ element.histoire }}</p>{% endif %}
+        <h2>Photographies</h2>
+        {% for photographie in element.photographies.all %}
+            <figure>
+                <img src="{{ photographie.fichier.url }}" alt="{{ photographie.commentaire|default:element.libelle }}">
+                {% if photographie.commentaire %}<figcaption>{{ photographie.commentaire }}</figcaption>{% endif %}
+            </figure>
+        {% endfor %}
+    </main>
+</body>
+</html>

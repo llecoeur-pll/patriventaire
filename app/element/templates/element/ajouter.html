@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ajouter un élément de patrimoine</title>
+    <title>{{ page_title|default:"Ajouter un élément de patrimoine" }}</title>
 </head>
 <body>
     <main>
-        <h1>Ajouter un élément de patrimoine</h1>
+        <h1>{{ page_title|default:"Ajouter un élément de patrimoine" }}</h1>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ element_form.non_field_errors }}
@@ -37,7 +37,7 @@
                 {% endfor %}
             </fieldset>
 
-            <button type="submit">Ajouter l'élément</button>
+            <button type="submit">{{ submit_label|default:"Ajouter l'élément" }}</button>
         </form>
     </main>
 </body>
