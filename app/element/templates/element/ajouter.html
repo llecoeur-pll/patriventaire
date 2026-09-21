@@ -48,7 +48,9 @@
             {% endfor %}
         </fieldset>
 
-        <button type="submit">{{ submit_label|default:"Ajouter l'élément" }}</button>
+        <button class="btn btn-primary" type="submit">
+            {{ submit_label|default:"Ajouter l'élément" }}
+        </button>
     </form>
 {% endblock %}
 

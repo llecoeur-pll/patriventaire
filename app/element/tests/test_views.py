@@ -30,6 +30,7 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(response, "existing-elements-data")
 		self.assertContains(response, "🌊 Mare")
 		self.assertContains(response, "🧼 Lavoir")
+		self.assertContains(response, 'class="btn btn-primary"')
 
 	def test_map_contains_existing_public_elements(self) -> None:
 		element = Element.objects.create(**element_data())
@@ -72,7 +73,6 @@ class AjouterElementViewTests(MediaTestCase):
 		data.update(
 			{
 				"photographies-0-fichier": image_upload(),
-				"photographies-0-commentaire": "Vue principale",
 			}
 		)
 		response = self.client.post(reverse("element:ajouter"), data)

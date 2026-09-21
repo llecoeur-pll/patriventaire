@@ -75,7 +75,6 @@ class PhotographieFormSetTests(MediaTestCase):
 				"photographies-INITIAL_FORMS": "0",
 				"photographies-MIN_NUM_FORMS": "0",
 				"photographies-MAX_NUM_FORMS": "1000",
-				"photographies-0-commentaire": "Vue principale",
 			},
 			files={"photographies-0-fichier": image_upload()},
 			instance=element,

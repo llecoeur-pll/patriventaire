@@ -160,7 +160,7 @@ class Categorie(models.Model):
 
 
 class Photographie(models.Model):
-	"""An image and optional comment attached to a heritage element."""
+	"""An image attached to a heritage element."""
 
 	id: int = models.BigAutoField(
 		primary_key=True,
@@ -175,10 +175,6 @@ class Photographie(models.Model):
 	fichier: str = models.ImageField(
 		upload_to=photo_upload_to,
 		verbose_name="fichier image",
-	)
-	commentaire: str = models.TextField(
-		blank=True,
-		verbose_name="commentaire",
 	)
 
 	class Meta:

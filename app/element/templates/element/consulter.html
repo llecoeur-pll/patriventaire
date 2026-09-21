@@ -13,8 +13,7 @@
         <h2>Photographies</h2>
         {% for photographie in element.photographies.all %}
             <figure>
-                <img src="{{ photographie.fichier.url }}" alt="{{ photographie.commentaire|default:element.libelle }}">
-                {% if photographie.commentaire %}<figcaption>{{ photographie.commentaire }}</figcaption>{% endif %}
+                <img src="{{ photographie.fichier.url }}" alt="{{ element.libelle }}">
             </figure>
         {% endfor %}
 {% endblock %}

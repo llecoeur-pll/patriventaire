@@ -60,7 +60,7 @@ PhotographieFormSet = inlineformset_factory(
 	Element,
 	Photographie,
 	formset=PhotographiesFormSet,
-	fields=("fichier", "commentaire"),
+	fields=("fichier",),
 	extra=1,
 	can_delete=False,
 )
