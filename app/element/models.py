@@ -104,6 +104,11 @@ class Element(models.Model):
 		auto_now_add=True,
 		verbose_name="date d'ajout",
 	)
+	is_valide: bool = models.BooleanField(
+		default=False,
+		verbose_name="validé",
+		help_text="Indique si l'élément peut être affiché publiquement.",
+	)
 
 	class Meta:
 		"""Database metadata and integrity rules for an element."""
@@ -118,6 +123,7 @@ class Element(models.Model):
 				name="element_commune_idx",
 			),
 			models.Index(fields=("date_ajout",), name="element_date_ajout_idx"),
+			models.Index(fields=("is_valide",), name="element_is_valide_idx"),
 			models.Index(
 				fields=("latitude", "longitude"),
 				name="element_coordonnees_idx",

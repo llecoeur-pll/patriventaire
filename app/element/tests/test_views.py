@@ -18,13 +18,27 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(response, "existing-elements-data")
 
 	def test_map_contains_existing_public_elements(self) -> None:
-		element = Element.objects.create(**element_data())
+		element = Element.objects.create(**element_data(is_valide=True))
 		Photographie.objects.create(element=element, fichier=image_upload())
 
 		response = self.client.get(reverse("element:carte"))
 
 		self.assertContains(response, element.libelle)
 		self.assertContains(response, "photo_url")
+
+	def test_map_excludes_unvalidated_elements(self) -> None:
+		unvalidated_element = Element.objects.create(**element_data())
+		validated_element = Element.objects.create(
+			**element_data(libelle="Élément validé", is_valide=True)
+		)
+
+		response = self.client.get(reverse("element:carte"))
+
+		map_elements = response.context["existing_elements"]
+		map_labels = {element["libelle"] for element in map_elements}
+
+		self.assertNotIn(unvalidated_element.libelle, map_labels)
+		self.assertIn(validated_element.libelle, map_labels)
 
 	def test_index_displays_the_element_form(self) -> None:
 		response = self.client.get(reverse("element:index"))
@@ -52,7 +66,7 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(response, 'class="btn btn-primary"')
 
 	def test_map_contains_existing_public_elements(self) -> None:
-		element = Element.objects.create(**element_data())
+		element = Element.objects.create(**element_data(is_valide=True))
 		Photographie.objects.create(element=element, fichier=image_upload())
 
 		response = self.client.get(reverse("element:ajouter"))

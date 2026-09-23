@@ -22,10 +22,11 @@ class ElementAdmin(admin.ModelAdmin):
 		"categorie",
 		"commune_deleguee",
 		"nom_deposant",
+		"is_valide",
 		"date_ajout",
 	)
 	list_display_links = ("numero", "libelle")
-	list_filter = ("categorie", "commune_deleguee", "date_ajout")
+	list_filter = ("is_valide", "categorie", "commune_deleguee", "date_ajout")
 	search_fields = (
 		"libelle",
 		"nom_deposant",

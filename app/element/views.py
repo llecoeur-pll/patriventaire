@@ -137,7 +137,11 @@ def _map_elements_data() -> list[dict[str, Any]]:
 	"""Return public fields used to display existing elements on the map."""
 
 	map_elements = []
-	for element in Element.objects.prefetch_related("photographies").all():
+	for element in (
+		Element.objects.filter(is_valide=True)
+		.select_related("categorie")
+		.prefetch_related("photographies")
+	):
 		photo = element.photographies.first()
 		map_elements.append(
 			{
