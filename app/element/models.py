@@ -55,20 +55,20 @@ class Element(models.Model):
 	)
 	libelle: str = models.CharField(
 		max_length=255,
-		verbose_name="libellé",
+		verbose_name="Nom de l'élément",
 	)
 	nom_deposant: str = models.CharField(
 		max_length=255,
-		verbose_name="nom du déposant",
+		verbose_name="Votre nom",
 	)
 	courriel_deposant: str = models.EmailField(
 		blank=True,
-		verbose_name="courriel du déposant",
+		verbose_name="Votre courriel",
 	)
 	telephone_deposant: str = models.CharField(
 		max_length=30,
 		blank=True,
-		verbose_name="téléphone du déposant",
+		verbose_name="Votre téléphone",
 	)
 	categorie: "Categorie" = models.ForeignKey(
 		"Categorie",

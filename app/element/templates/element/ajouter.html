@@ -11,10 +11,37 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ element_form.non_field_errors }}
+
+        <p>
+            {{ element_form.libelle.label_tag }}
+            {{ element_form.libelle }}
+            {{ element_form.libelle.errors }}
+        </p>
+
+        <div class="row g-3 deposant-fields">
+            {% for field in element_form %}
+                {% if field.name == "nom_deposant" or field.name == "courriel_deposant" or field.name == "telephone_deposant" %}
+                    <p class="col-12 col-md-4 mb-0">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {{ field.errors }}
+                    </p>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="mb-4">
+            <h2 class="h5">Localiser l'élément</h2>
+            <p class="text-secondary">Cliquez sur la carte pour renseigner les coordonnées GPS.</p>
+            <div id="map-widget" data-latitude-input="id_latitude" data-longitude-input="id_longitude"></div>
+            {{ existing_elements|json_script:"existing-elements-data" }}
+        </div>
+
+        {{ element_form.latitude.as_hidden }}
+        {{ element_form.longitude.as_hidden }}
+
         {% for field in element_form %}
-            {% if field.name == "latitude" or field.name == "longitude" %}
-                {{ field.as_hidden }}
-            {% else %}
+            {% if field.name == "categorie" or field.name == "commune_deleguee" or field.name == "description" or field.name == "histoire" %}
                 <p>
                     {{ field.label_tag }}
                     {{ field }}
@@ -23,13 +50,6 @@
                 </p>
             {% endif %}
         {% endfor %}
-
-        <div class="mb-4">
-            <h2 class="h5">Localiser l'élément</h2>
-            <p class="text-secondary">Cliquez sur la carte pour renseigner les coordonnées GPS.</p>
-            <div id="map-widget" data-latitude-input="id_latitude" data-longitude-input="id_longitude"></div>
-            {{ existing_elements|json_script:"existing-elements-data" }}
-        </div>
 
         <fieldset>
             <legend>Photographies</legend>

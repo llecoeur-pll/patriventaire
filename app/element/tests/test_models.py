@@ -53,8 +53,8 @@ class ElementModelTests(MediaTestCase):
 
 
 class CategorieModelTests(MediaTestCase):
-	def test_migration_seeds_the_six_categories(self) -> None:
-		self.assertEqual(Categorie.objects.count(), 6)
+	def test_migration_seeds_the_seven_categories(self) -> None:
+		self.assertEqual(Categorie.objects.count(), 7)
 		self.assertEqual(
 			set(Categorie.objects.values_list("libelle", flat=True)),
 			{
@@ -63,8 +63,9 @@ class CategorieModelTests(MediaTestCase):
 				"Ruine ou bâtisse ancienne",
 				"Lavoir",
 				"Arbre remarquable",
+				"Calvaire",
 				"Autre",
 			},
 		)
-		self.assertEqual(Categorie.objects.values_list("icone", flat=True).distinct().count(), 6)
-		self.assertEqual(Categorie.objects.values_list("couleur", flat=True).distinct().count(), 6)
+		self.assertEqual(Categorie.objects.values_list("icone", flat=True).distinct().count(), 7)
+		self.assertEqual(Categorie.objects.values_list("couleur", flat=True).distinct().count(), 7)

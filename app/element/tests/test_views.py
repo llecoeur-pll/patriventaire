@@ -64,6 +64,8 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(response, "🌊 Mare")
 		self.assertContains(response, "🧼 Lavoir")
 		self.assertContains(response, 'class="btn btn-primary"')
+		self.assertContains(response, 'class="row g-3 deposant-fields"')
+		self.assertContains(response, 'class="col-12 col-md-4 mb-0"')
 
 	def test_map_contains_existing_public_elements(self) -> None:
 		element = Element.objects.create(**element_data(is_valide=True))
