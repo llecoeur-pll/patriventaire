@@ -41,7 +41,7 @@
         {{ element_form.longitude.as_hidden }}
 
         {% for field in element_form %}
-            {% if field.name == "categorie" or field.name == "commune_deleguee" or field.name == "description" or field.name == "histoire" %}
+            {% if field.name == "categorie" or field.name == "commune" or field.name == "description" or field.name == "histoire" %}
                 <p>
                     {{ field.label_tag }}
                     {{ field }}
@@ -51,16 +51,32 @@
             {% endif %}
         {% endfor %}
 
+        <div class="honeypot-field" aria-hidden="true">
+            {{ element_form.website.label_tag }}
+            {{ element_form.website }}
+        </div>
+
         <fieldset>
             <legend>Photographies</legend>
             {{ photographie_formset.management_form }}
             {{ photographie_formset.non_form_errors }}
-            <p id="photo-dropzone" class="photo-dropzone" tabindex="0" role="button"
+            <div id="photo-dropzone" class="photo-dropzone" tabindex="0" role="button"
                aria-controls="photo-picker" aria-describedby="photo-dropzone-help">
                 <strong>Déposez vos photos ici</strong> ou cliquez pour les sélectionner
                 <small id="photo-dropzone-help">Vous pouvez ajouter plusieurs photos.</small>
-            </p>
+                <button id="camera-button" class="btn btn-outline-primary" type="button">
+                    Prendre une photo
+                </button>
+            </div>
             <input id="photo-picker" class="d-none" type="file" accept="image/*" multiple>
+            <input id="camera-picker" class="d-none" type="file" accept="image/*" capture="environment">
+                <div id="camera-panel" class="camera-panel d-none" aria-live="polite">
+                    <div id="camera-viewfinder"></div>
+                    <div class="camera-controls">
+                        <button id="capture-photo" class="btn btn-primary" type="button">Capturer</button>
+                        <button id="close-camera" class="btn btn-outline-secondary" type="button">Fermer</button>
+                    </div>
+                </div>
 
             <div id="photo-forms">
                 {% for photo_form in photographie_formset %}
@@ -118,11 +134,17 @@
 {% block extra_scripts %}
     <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
     <script>
         (() => {
             const dropzone = document.getElementById("photo-dropzone");
             const picker = document.getElementById("photo-picker");
             const formsContainer = document.getElementById("photo-forms");
+                const cameraPicker = document.getElementById("camera-picker");
+                const cameraButton = document.getElementById("camera-button");
+                const cameraPanel = document.getElementById("camera-panel");
+                const captureButton = document.getElementById("capture-photo");
+                const closeCameraButton = document.getElementById("close-camera");
             const emptyFormTemplate = document.getElementById("empty-photo-form");
             const totalFormsInput = document.getElementById(
                 "id_{{ photographie_formset.prefix }}-TOTAL_FORMS"
@@ -175,6 +197,60 @@
                     updatePreview(form, file);
                 });
             };
+
+            const stopCamera = () => {
+                Webcam.reset();
+                cameraPanel.classList.add("d-none");
+            };
+
+            const openCamera = () => {
+                cameraPanel.classList.remove("d-none");
+                Webcam.set({
+                    audio: false,
+                    width: 640,
+                    height: 480,
+                    image_format: "jpeg",
+                    jpeg_quality: 90,
+                    constraints: {
+                        video: { facingMode: { ideal: "environment" } },
+                    },
+                });
+                Webcam.attach("#camera-viewfinder");
+            };
+
+            Webcam.on("error", () => {
+                stopCamera();
+                cameraPicker.click();
+            });
+
+            cameraButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                if (window.Webcam) {
+                    openCamera();
+                } else {
+                    cameraPicker.click();
+                }
+            });
+            captureButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                Webcam.snap(async (dataUri) => {
+                    const blob = await (await fetch(dataUri)).blob();
+                    assignFiles([
+                        new File([blob], `photo-${Date.now()}.jpg`, {
+                            type: "image/jpeg",
+                        }),
+                    ]);
+                    stopCamera();
+                });
+            });
+            closeCameraButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                stopCamera();
+            });
+            cameraPicker.addEventListener("change", () => {
+                assignFiles(cameraPicker.files);
+                cameraPicker.value = "";
+            });
 
             ["dragenter", "dragover"].forEach((eventName) => {
                 dropzone.addEventListener(eventName, (event) => {

@@ -19,7 +19,7 @@ class ElementFormTests(MediaTestCase):
 			"libelle",
 			"nom_deposant",
 			"categorie",
-			"commune_deleguee",
+			"commune",
 			"latitude",
 			"longitude",
 			"description",
@@ -35,6 +35,12 @@ class ElementFormTests(MediaTestCase):
 		form = ElementForm(data=data)
 
 		self.assertTrue(form.is_valid(), form.errors)
+
+	def test_form_rejects_a_filled_honeypot(self) -> None:
+		form = ElementForm(data=form_data(website="https://spam.example"))
+
+		self.assertFalse(form.is_valid())
+		self.assertIn("website", form.errors)
 
 	def test_form_rejects_invalid_email_and_coordinates(self) -> None:
 		form = ElementForm(

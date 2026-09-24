@@ -6,7 +6,7 @@
         <h1>{{ element.libelle }}</h1>
         <p>Numéro : {{ element.numero }}</p>
         <p>Catégorie : {{ element.categorie.icone }} {{ element.categorie.libelle }}</p>
-        <p>Commune : {{ element.get_commune_deleguee_display }}</p>
+        <p>Commune : {{ element.commune }}</p>
         <p>Coordonnées : {{ element.latitude }}, {{ element.longitude }}</p>
         <p>{{ element.description }}</p>
         {% if element.histoire %}<p>{{ element.histoire }}</p>{% endif %}

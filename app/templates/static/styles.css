@@ -127,6 +127,15 @@ textarea:focus {
     outline: none;
 }
 
+.honeypot-field {
+    height: 1px;
+    left: -10000px;
+    overflow: hidden;
+    position: absolute;
+    top: auto;
+    width: 1px;
+}
+
 .btn-primary {
     --bs-btn-bg: var(--primary);
     --bs-btn-border-color: var(--primary);
@@ -187,6 +196,29 @@ textarea:focus {
 
 .photo-dropzone small {
     color: var(--text-light);
+}
+
+.camera-panel {
+    background: #1f2933;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    padding: 1rem;
+}
+
+.camera-panel video {
+    background: #000;
+    display: block;
+    max-height: 60vh;
+    object-fit: contain;
+    width: 100%;
+}
+
+.camera-controls {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    padding-top: 1rem;
 }
 
 .photo-form {

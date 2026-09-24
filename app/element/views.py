@@ -38,7 +38,7 @@ def ajouter_element(request: HttpRequest) -> HttpResponse:
 				"nom_deposant": element.nom_deposant,
 				"courriel_deposant": element.courriel_deposant,
 				"telephone_deposant": element.telephone_deposant,
-				"commune_deleguee": element.commune_deleguee,
+				"commune": element.commune_id,
 			}
 			return redirect("element:ajouter")
 	else:

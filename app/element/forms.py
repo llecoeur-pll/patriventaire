@@ -11,6 +11,18 @@ from .models import Element, Photographie
 class ElementForm(forms.ModelForm):
 	"""Public form used to create a heritage element."""
 
+	website = forms.CharField(
+		required=False,
+		label="",
+		widget=forms.TextInput(
+			attrs={
+				"autocomplete": "off",
+				"tabindex": "-1",
+				"aria-hidden": "true",
+			}
+		),
+	)
+
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.fields["categorie"].choices = [
@@ -21,15 +33,24 @@ class ElementForm(forms.ModelForm):
 			for category in self.fields["categorie"].queryset
 		]
 
+	def clean_website(self) -> str:
+		"""Reject submissions that fill the invisible bot trap."""
+
+		website = self.cleaned_data["website"]
+		if website:
+			raise forms.ValidationError("Soumission automatique détectée.")
+		return website
+
 	class Meta:
 		model = Element
 		fields = (
+			"website",
 			"libelle",
 			"nom_deposant",
 			"courriel_deposant",
 			"telephone_deposant",
 			"categorie",
-			"commune_deleguee",
+			"commune",
 			"latitude",
 			"longitude",
 			"description",

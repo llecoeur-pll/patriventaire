@@ -28,19 +28,6 @@ def photo_upload_to(instance: "Photographie", filename: str) -> str:
 class Element(models.Model):
 	"""A heritage item submitted by a public user."""
 
-	class Commune(models.TextChoices):
-		"""Communes deleguees covered by the inventory."""
-
-		CHENEDOUIT = "Chênedouit", "Chênedouit"
-		FORET_AUVRAY = "La-Forêt-Auvray", "La-Forêt-Auvray"
-		FRESNAYE_SAUVAGES = "La-Fresnaye-Aux-Sauvages", "La-Fresnaye-Aux-Sauvages"
-		LES_ROTOURS = "Les-Rotours", "Les-Rotours"
-		MENIL_JEAN = "Ménil-Jean", "Ménil-Jean"
-		PUTANGES_PONT_ECREPIN = "Putanges-Pont-Ecrepin", "Putanges-Pont-Ecrepin"
-		RABODANGES = "Rabodanges", "Rabodanges"
-		SAINT_AUBERT = "Saint-Aubert", "Saint-Aubert"
-		SAINTE_CROIX_ORNE = "Sainte-Croix-Sur-Orne", "Sainte-Croix-Sur-Orne"
-
 	numero: int = models.BigAutoField(
 		primary_key=True,
 		verbose_name="numéro",
@@ -76,10 +63,11 @@ class Element(models.Model):
 		related_name="elements",
 		verbose_name="catégorie",
 	)
-	commune_deleguee: str = models.CharField(
-		max_length=32,
-		choices=Commune,
-		verbose_name="commune déléguée",
+	commune: "Commune" = models.ForeignKey(
+		"Commune",
+		on_delete=models.PROTECT,
+		related_name="elements",
+		verbose_name="commune",
 	)
 	latitude: Decimal = models.DecimalField(
 		max_digits=9,
@@ -118,10 +106,7 @@ class Element(models.Model):
 		verbose_name_plural = "éléments de patrimoine"
 		indexes = (
 			models.Index(fields=("categorie",), name="element_categorie_idx"),
-			models.Index(
-				fields=("commune_deleguee",),
-				name="element_commune_idx",
-			),
+			models.Index(fields=("commune",), name="element_commune_idx"),
 			models.Index(fields=("date_ajout",), name="element_date_ajout_idx"),
 			models.Index(fields=("is_valide",), name="element_is_valide_idx"),
 			models.Index(
@@ -146,6 +131,25 @@ class Element(models.Model):
 		"""Return a human-readable identifier."""
 
 		return f"{self.numero} - {self.libelle}"
+
+
+class Commune(models.Model):
+	"""A delegated commune covered by the heritage inventory."""
+
+	id: int = models.BigAutoField(primary_key=True)
+	libelle: str = models.CharField(
+		max_length=100,
+		unique=True,
+		verbose_name="libellé",
+	)
+
+	class Meta:
+		ordering = ("libelle",)
+		verbose_name = "commune"
+		verbose_name_plural = "communes"
+
+	def __str__(self) -> str:
+		return self.libelle
 
 
 class Categorie(models.Model):

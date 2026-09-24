@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Categorie, Element, Photographie
+from .models import Categorie, Commune, Element, Photographie
 
 
 class PhotographieInline(admin.TabularInline):
@@ -20,13 +20,13 @@ class ElementAdmin(admin.ModelAdmin):
 		"numero",
 		"libelle",
 		"categorie",
-		"commune_deleguee",
+		"commune",
 		"nom_deposant",
 		"is_valide",
 		"date_ajout",
 	)
 	list_display_links = ("numero", "libelle")
-	list_filter = ("is_valide", "categorie", "commune_deleguee", "date_ajout")
+	list_filter = ("is_valide", "categorie", "commune", "date_ajout")
 	search_fields = (
 		"libelle",
 		"nom_deposant",
@@ -55,6 +55,21 @@ class CategorieAdmin(admin.ModelAdmin):
 		"""Return the number of elements using this category."""
 
 		return categorie.elements.count()
+
+
+@admin.register(Commune)
+class CommuneAdmin(admin.ModelAdmin):
+	"""Admin interface for adding and editing communes."""
+
+	list_display = ("libelle", "element_count")
+	search_fields = ("libelle",)
+	ordering = ("libelle",)
+
+	@admin.display(description="éléments")
+	def element_count(self, commune: Commune) -> int:
+		"""Return the number of elements using this commune."""
+
+		return commune.elements.count()
 
 
 @admin.register(Photographie)

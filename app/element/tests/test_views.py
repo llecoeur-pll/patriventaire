@@ -66,6 +66,11 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(response, 'class="btn btn-primary"')
 		self.assertContains(response, 'class="row g-3 deposant-fields"')
 		self.assertContains(response, 'class="col-12 col-md-4 mb-0"')
+		self.assertContains(response, 'class="honeypot-field"')
+		self.assertContains(response, 'id="camera-button"')
+		self.assertContains(response, 'id="camera-viewfinder"')
+		self.assertContains(response, 'capture="environment"')
+		self.assertContains(response, "webcamjs/1.0.26/webcam.min.js")
 
 	def test_map_contains_existing_public_elements(self) -> None:
 		element = Element.objects.create(**element_data(is_valide=True))
@@ -162,7 +167,7 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(follow_up, 'value="Alex Martin"')
 		self.assertContains(follow_up, 'value="alex@example.com"')
 		self.assertContains(follow_up, 'value="0600000000"')
-		self.assertContains(follow_up, 'value="Rabodanges"')
+		self.assertContains(follow_up, 'value="7" selected')
 
 	def test_element_can_be_viewed_by_number_and_edited_by_token(self) -> None:
 		element = Element.objects.create(**element_data())
