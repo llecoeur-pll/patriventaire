@@ -110,10 +110,6 @@ Déployez les conteneurs avec :
 Lors du premier démarrage et pour appliquer de nouveaux changements, éxecuter les migrations Django :
 `docker exec patriventaire python manage.py migrate`.
 
+Pour collecter les fichiers statiques : `docker exec patriventaire python manage.py collectstatic`.
+
 Créez un super utilisateur avec `docker exec -it patriventaire python manage.py createsuperuser`.
-
-
-
-Les volumes dockers à sauvegarder sont :
-- `patriventaire_postgres-18` : base de données PosgreSQL.
-- `patriventaire_media` : les photos téléversées par les utilisateurs.

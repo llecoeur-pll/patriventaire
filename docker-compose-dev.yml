@@ -2,7 +2,7 @@ services:
   patriventaire:
     build: .
     image: patriventaire
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    command: ["python", "manage.py", "runserver", "0.0.0.0:80"]
     container_name: patriventaire
     env_file:
       - .env
