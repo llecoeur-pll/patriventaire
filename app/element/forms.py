@@ -25,6 +25,7 @@ class ElementForm(forms.ModelForm):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+		self.fields["description"].label = "Description et histoire"
 		self.fields["categorie"].choices = [
 			(
 				category.pk,

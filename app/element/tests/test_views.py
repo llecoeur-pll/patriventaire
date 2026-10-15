@@ -66,6 +66,7 @@ class AjouterElementViewTests(MediaTestCase):
 
 		self.assertEqual(response.status_code, 200)
 		self.assertContains(response, "Ajouter un élément de patrimoine")
+		self.assertContains(response, "Description et histoire")
 		self.assertContains(response, "photographies-TOTAL_FORMS")
 		self.assertContains(response, 'id="map-widget"')
 		self.assertContains(response, 'id="geolocate-button"')
@@ -178,7 +179,8 @@ class AjouterElementViewTests(MediaTestCase):
 
 		self.assertContains(
 			follow_up,
-			"L'élément a bien été ajouté. Il sera examiné par nos équipes et publié sur la carte après validation.",
+			f"Merci ! L'élément {element.libelle} a été ajouté. "
+			"Il sera révisé par un modérateur avant publication sur la carte.",
 			html=True,
 		)
 		self.assertContains(follow_up, 'value="alex@example.com"')

@@ -32,7 +32,8 @@ def ajouter_element(request: HttpRequest) -> HttpResponse:
 			_send_confirmation_email(request, element)
 			messages.success(
 				request,
-				"L'élément a bien été ajouté. Il sera examiné par nos équipes et publié sur la carte après validation."
+				f"Merci ! L'élément {element.libelle} a été ajouté. "
+				"Il sera révisé par un modérateur avant publication sur la carte."
 			)
 			request.session["element_form_initial"] = {
 				"courriel_deposant": element.courriel_deposant,
