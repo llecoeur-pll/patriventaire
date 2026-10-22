@@ -75,6 +75,11 @@ class Element(models.Model):
 	description: str = models.TextField(
 		verbose_name="description",
 	)
+	photo_miniature: str = models.TextField(
+		blank=True,
+		verbose_name="photo miniature",
+		help_text="Emplacement de la miniature utilisée pour identifier l'élément.",
+	)
 	date_ajout: datetime = models.DateTimeField(
 		auto_now_add=True,
 		verbose_name="date d'ajout",

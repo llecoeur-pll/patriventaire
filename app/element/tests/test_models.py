@@ -13,11 +13,21 @@ class ElementModelTests(MediaTestCase):
 
 		self.assertTrue(element.jeton_ecriture)
 		self.assertEqual(len(element.jeton_ecriture), 43)
+		self.assertEqual(element.photo_miniature, "")
 		self.assertIsNotNone(element.date_ajout)
 		self.assertEqual(str(element), f"{element.numero} - Ancien lavoir")
 
 		second_element = Element.objects.create(**element_data(libelle="Une mare"))
 		self.assertNotEqual(element.jeton_ecriture, second_element.jeton_ecriture)
+
+	def test_element_stores_thumbnail_location(self) -> None:
+		element = Element.objects.create(
+			**element_data(photo_miniature="miniatures/ancien-lavoir.jpg")
+		)
+
+		element.refresh_from_db()
+
+		self.assertEqual(element.photo_miniature, "miniatures/ancien-lavoir.jpg")
 
 	def test_coordinates_outside_allowed_ranges_are_invalid(self) -> None:
 		element = Element(**element_data(latitude=91, longitude=-181))
