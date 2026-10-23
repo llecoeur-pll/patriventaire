@@ -1,6 +1,11 @@
 """Tests for the element models."""
 
+from io import BytesIO
+from pathlib import Path
+
+from PIL import Image
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 
 from ..models import Categorie, Element, Photographie
@@ -60,6 +65,33 @@ class ElementModelTests(MediaTestCase):
 		self.assertTrue(second_photo.fichier.name.startswith("custom-photos/"))
 		self.assertTrue(first_photo.fichier.name.endswith(".png"))
 		self.assertNotEqual(first_photo.fichier.name, second_photo.fichier.name)
+
+	def test_photo_is_resized_to_1920_pixels_and_keeps_its_ratio(self) -> None:
+		element = Element.objects.create(**element_data())
+		image_buffer = BytesIO()
+		Image.new("RGB", (2400, 1200), color="red").save(
+			image_buffer,
+			format="PNG",
+		)
+		image_buffer.seek(0)
+		photo = Photographie.objects.create(
+			element=element,
+			fichier=SimpleUploadedFile(
+				"panorama.png",
+				image_buffer.read(),
+				content_type="image/png",
+			),
+		)
+
+		with Image.open(photo.fichier.path) as saved_image:
+			self.assertEqual(saved_image.size, (1920, 960))
+
+		thumbnail_path = Path(photo.fichier.path).with_name(
+			f"mini_{Path(photo.fichier.path).name}"
+		)
+		self.assertTrue(thumbnail_path.is_file())
+		with Image.open(thumbnail_path) as thumbnail:
+			self.assertEqual(thumbnail.size, (180, 90))
 
 
 class CategorieModelTests(MediaTestCase):

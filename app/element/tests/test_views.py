@@ -1,5 +1,7 @@
 """Tests for the element views."""
 
+from pathlib import Path
+
 from django.core import mail
 from django.test import override_settings
 from django.urls import reverse
@@ -31,14 +33,16 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(response, "openstreetmap.org")
 		self.assertContains(response, "existing-elements-data")
 
-	def test_map_contains_existing_public_elements(self) -> None:
+	def test_map_uses_thumbnail_for_existing_public_elements(self) -> None:
 		element = Element.objects.create(**element_data(is_valide=True))
-		Photographie.objects.create(element=element, fichier=image_upload())
+		photo = Photographie.objects.create(element=element, fichier=image_upload())
 
 		response = self.client.get(reverse("element:carte"))
 
 		self.assertContains(response, element.libelle)
 		self.assertContains(response, "photo_url")
+		thumbnail_name = f"mini_{photo.fichier.name.rsplit('/', 1)[-1]}"
+		self.assertTrue(response.context["existing_elements"][0]["photo_url"].endswith(thumbnail_name))
 
 	def test_map_excludes_unvalidated_elements(self) -> None:
 		unvalidated_element = Element.objects.create(**element_data())
@@ -143,6 +147,14 @@ class AjouterElementViewTests(MediaTestCase):
 		)
 		self.assertEqual(Element.objects.count(), 1)
 		self.assertEqual(Photographie.objects.count(), 1)
+		element = Element.objects.get()
+		photographie = Photographie.objects.get()
+		photo_directory = Path(self.media_directory.name) / "photos" / str(element.pk)
+		self.assertTrue(photo_directory.is_dir())
+		self.assertEqual(
+			Path(photographie.fichier.name).parts[:2],
+			("photos", str(element.pk)),
+		)
 
 	def test_creation_sends_confirmation_email_and_prefills_next_form(self) -> None:
 		data = form_data(

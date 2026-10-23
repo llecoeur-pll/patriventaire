@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from pathlib import Path, PurePosixPath
 from typing import Any
 
+from django.conf import settings
 from django.core.mail import send_mail
 from django.db import transaction
 from django.contrib import messages
@@ -27,6 +29,12 @@ def ajouter_element(request: HttpRequest) -> HttpResponse:
 		if element_form.is_valid() and photographie_formset.is_valid():
 			with transaction.atomic():
 				element = element_form.save()
+				photo_directory = (
+					Path(settings.MEDIA_ROOT)
+					/ settings.PHOTO_UPLOAD_DIR
+					/ str(element.pk)
+				)
+				photo_directory.mkdir(parents=True, exist_ok=True)
 				photographie_formset.instance = element
 				photographie_formset.save()
 			_send_confirmation_email(request, element)
@@ -138,6 +146,18 @@ def _map_elements_data() -> list[dict[str, Any]]:
 		.prefetch_related("photographies")
 	):
 		photo = element.photographies.first()
+		photo_url = None
+		if photo:
+			photo_path = PurePosixPath(photo.fichier.name)
+			thumbnail_path = str(
+				photo_path.with_name(f"mini_{photo_path.name}")
+			)
+			storage = photo.fichier.storage
+			photo_url = (
+				storage.url(thumbnail_path)
+				if storage.exists(thumbnail_path)
+				else photo.fichier.url
+			)
 		map_elements.append(
 			{
 				"numero": element.numero,
@@ -147,7 +167,7 @@ def _map_elements_data() -> list[dict[str, Any]]:
 				"categorie_couleur": element.categorie.couleur,
 				"latitude": float(element.latitude),
 				"longitude": float(element.longitude),
-				"photo_url": photo.fichier.url if photo else None,
+				"photo_url": photo_url,
 			}
 		)
 	return map_elements

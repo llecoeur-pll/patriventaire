@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import secrets
+from io import BytesIO
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 
+from PIL import Image, ImageOps
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -19,10 +22,13 @@ def generate_edit_token() -> str:
 
 
 def photo_upload_to(instance: "Photographie", filename: str) -> str:
-	"""Return a configurable directory and a unique random image filename."""
+	"""Return the element directory and a unique random image filename."""
 
 	extension = Path(filename).suffix.lower()
-	return f"{settings.PHOTO_UPLOAD_DIR}/{secrets.token_urlsafe(24)}{extension}"
+	return (
+		f"{settings.PHOTO_UPLOAD_DIR}/{instance.element_id}/"
+		f"{secrets.token_urlsafe(24)}{extension}"
+	)
 
 
 class Element(models.Model):
@@ -164,6 +170,9 @@ class Categorie(models.Model):
 class Photographie(models.Model):
 	"""An image attached to a heritage element."""
 
+	LARGEUR_CIBLE = 1920
+	LARGEUR_MINIATURE = 180
+
 	id: int = models.BigAutoField(
 		primary_key=True,
 		verbose_name="identifiant",
@@ -188,6 +197,52 @@ class Photographie(models.Model):
 		indexes = (
 			models.Index(fields=("element",), name="photo_element_idx"),
 		)
+
+	def save(self, *args: object, **kwargs: object) -> None:
+		"""Resize a new image to 1920 pixels wide before storing it."""
+
+		if self.fichier and not self.fichier._committed:
+			with Image.open(self.fichier) as source_image:
+				image_format = source_image.format
+				image = ImageOps.exif_transpose(source_image)
+				new_height = round(
+					image.height * self.LARGEUR_CIBLE / image.width
+				)
+				resized_image = image.resize(
+					(self.LARGEUR_CIBLE, new_height),
+					Image.Resampling.LANCZOS,
+				)
+				if image_format == "JPEG" and resized_image.mode not in {
+					"L",
+					"RGB",
+					"CMYK",
+				}:
+					resized_image = resized_image.convert("RGB")
+				output = BytesIO()
+				resized_image.save(output, format=image_format)
+				thumbnail_height = round(
+					resized_image.height
+					* self.LARGEUR_MINIATURE
+					/ resized_image.width
+				)
+				thumbnail_image = resized_image.resize(
+					(self.LARGEUR_MINIATURE, thumbnail_height),
+					Image.Resampling.LANCZOS,
+				)
+				thumbnail_output = BytesIO()
+				thumbnail_image.save(thumbnail_output, format=image_format)
+			self.fichier.save(
+				self.fichier.name,
+				ContentFile(output.getvalue()),
+				save=False,
+			)
+			stored_path = Path(self.fichier.name)
+			thumbnail_path = stored_path.with_name(f"mini_{stored_path.name}")
+			self.fichier.storage.save(
+				str(thumbnail_path),
+				ContentFile(thumbnail_output.getvalue()),
+			)
+		super().save(*args, **kwargs)
 
 	def __str__(self) -> str:
 		"""Return a human-readable identifier."""
