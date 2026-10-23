@@ -33,15 +33,12 @@ déposant sont donc conservées sur chaque élément.
 | `numero` | `BigAutoField` | Oui | Identifiant primaire et numéro unique communiqué au déposant |
 | `jeton_ecriture` | `CharField(max_length=64, unique=True, editable=False)` | Oui | Suite aléatoire unique utilisée pour l'accès en écriture |
 | `libelle` | `CharField(max_length=255)` | Oui | Nom ou libellé de l'élément |
-| `nom_deposant` | `CharField(max_length=255)` | Oui | Nom et prénom, ou pseudonyme |
 | `courriel_deposant` | `EmailField(blank=True)` | Non | Adresse utilisée pour le message de confirmation |
-| `telephone_deposant` | `CharField(max_length=30, blank=True)` | Non | Téléphone du déposant |
 | `categorie` | `CharField(choices=...)` | Oui | Une valeur de la liste des catégories autorisées |
 | `commune_deleguee` | `CharField(choices=...)` | Oui | Une commune déléguée de la liste de référence |
 | `latitude` | `DecimalField(max_digits=9, decimal_places=6)` | Oui | Latitude GPS en degrés décimaux, de -90 à 90 |
 | `longitude` | `DecimalField(max_digits=9, decimal_places=6)` | Oui | Longitude GPS en degrés décimaux, de -180 à 180 |
 | `description` | `TextField()` | Oui | Description de l'élément |
-| `histoire` | `TextField(blank=True)` | Non | Histoire ou anecdote liée à l'élément |
 | `date_ajout` | `DateTimeField(auto_now_add=True)` | Oui | Date et heure de création, renseignées automatiquement en base |
 
 ### Catégories autorisées
@@ -113,14 +110,14 @@ stocké dans le stockage média configuré par Django.
   bornes géographiques.
 - `categorie` et `commune_deleguee` n'acceptent que les choix définis dans ce
   document.
-- `courriel_deposant` et `telephone_deposant` sont facultatifs, mais le
-  courriel doit être valide lorsqu'il est fourni.
+- `courriel_deposant` est facultatif, mais doit être valide lorsqu'il est
+  fourni.
 - Un élément ne peut être validé que s'il contient au moins une photographie.
 - Les formats, tailles maximales et dimensions acceptés pour les images
   doivent être contrôlés à l'import afin de limiter les fichiers dangereux ou
   trop volumineux.
-- Les champs contenant des données personnelles (`nom_deposant`, courriel et
-  téléphone) doivent être protégés dans l'administration et les exports, avec
+- Le champ contenant une donnée personnelle (`courriel_deposant`) doit être
+  protégé dans l'administration et les exports, avec
   une durée de conservation à définir dans le cadre du RGPD.
 
 ## Comportements applicatifs liés au modèle
@@ -140,18 +137,13 @@ Après la création réussie d'un élément :
 
 ### Pré-remplissage du formulaire
 
-Le formulaire suivant est pré-rempli avec les valeurs du dernier élément
-créé pour le même déposant et la même commune :
+Le formulaire suivant est pré-rempli avec les valeurs du dernier élément créé
+dans la session du navigateur :
 
-- `nom_deposant` ;
 - `courriel_deposant` ;
-- `telephone_deposant` ;
 - `commune_deleguee`.
 
-En l'absence de compte utilisateur, cette correspondance repose sur les
-coordonnées saisies par le déposant. Le service de recherche devra donc
-définir explicitement sa règle de correspondance, par exemple une égalité
-normalisée sur le nom et le courriel lorsqu'il est disponible.
+Ce pré-remplissage ne repose pas sur l'identification du déposant.
 
 ## Évolutions hors périmètre initial
 

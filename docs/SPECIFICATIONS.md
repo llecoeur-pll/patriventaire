@@ -13,22 +13,18 @@ Les acteurs sont :
 L'interface utilisateur n'aura aucune authentification. Les utilisateurs arriveront directement sur un formulaire sans authentification ou il pourra :
 
  - donner un nom a l'élément de patrimoine
- - donner ses coordonnées
+ - indiquer une adresse courriel facultative
  - catégoriser l'élément
  - la commune déléguée
  - le placer sur une carte
  - Décrire l'élément de patrimoine
- - de manière factultative, fournir une histoire, une annecdote plus ou moins personnelle sur l'élément
  - envoyer des photos de l'élément, qui pourront être enrichies de données
  
 Un élément est caractérisé par 
  - Un numéro unique
  - Une suite de caractères unique et aléatoire pour accéder a cet élément en écriture
  - Un libellé
- - Les coordonnées de la personne qui l'a posté:
-    - nom et prénom, ou pseudo
-    - courriel (facultatif)
-    - téléphone (facultatif)
+ - Le courriel facultatif de la personne qui l'a posté
  - la catégorie de l'élément, qui peut être :
     - Mare
     - Puit ou fontaine
@@ -48,7 +44,6 @@ Un élément est caractérisé par
     - La-Fresnaye-Aux-Sauvages
  - les coordonnées GPS
  - Une description
- - une histoire
  - DUne ou plusieurs photographies
  - La date d'ajout de l'élément, remplis autotatiquement en base
  
