@@ -93,11 +93,15 @@ CSRF_TRUSTED_ORIGINS=https://nomdedomaine.extension,https://www.nomdedomaine.ext
 ```
 Voir  ["Cross Site Request Forgery"](https://docs.djangoproject.com/en/6.1/ref/csrf/) sur la documentation de Django.
 
-Le serveur utilisé est [Granian](https://github.com/emmett-framework/granian). Il sert aussi les fichiers statiques. Configurez les variables d'environnement de Granian pour servir les fichiers statiques :
+Le serveur utilisé est [Granian](https://github.com/emmett-framework/granian). Il sert les fichiers statiques. Configurez les variables d'environnement de Granian pour servir ces fichiers :
 ```dotenv
 GRANIAN_STATIC_PATH_ROUTE=/static
 GRANIAN_STATIC_PATH_MOUNT=./staticfiles
 ```
+
+Les fichiers envoyés par les utilisateurs sont conservés dans le volume Docker
+`media` et servis sous `/media/` par l'application, y compris avec
+`DJANGO_DEBUG=False`.
 
 Désactivez le mode DEBUG dans le *.env*:
 ```dotenv

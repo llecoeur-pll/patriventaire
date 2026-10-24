@@ -44,6 +44,17 @@ class AjouterElementViewTests(MediaTestCase):
 		thumbnail_name = f"mini_{photo.fichier.name.rsplit('/', 1)[-1]}"
 		self.assertTrue(response.context["existing_elements"][0]["photo_url"].endswith(thumbnail_name))
 
+	@override_settings(DEBUG=False)
+	def test_uploaded_media_is_served_when_debug_is_disabled(self) -> None:
+		element = Element.objects.create(**element_data())
+		photo = Photographie.objects.create(element=element, fichier=image_upload())
+
+		response = self.client.get(photo.fichier.url)
+
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response["Content-Type"], "image/png")
+		self.assertGreater(len(b"".join(response.streaming_content)), 0)
+
 	def test_map_excludes_unvalidated_elements(self) -> None:
 		unvalidated_element = Element.objects.create(**element_data())
 		validated_element = Element.objects.create(

@@ -128,7 +128,7 @@ STATICFILES_DIRS = [BASE_DIR / 'templates' / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Uploaded media files
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 PHOTO_UPLOAD_DIR = 'photos'
 
