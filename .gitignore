@@ -5,3 +5,4 @@ __pycache__/
 *.pyc
 medias/
 docker-compose.yml
+app/db.sqlite3

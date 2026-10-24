@@ -211,6 +211,7 @@ class AjouterElementViewTests(MediaTestCase):
 
 	def test_element_can_be_viewed_by_number_and_edited_by_token(self) -> None:
 		element = Element.objects.create(**element_data())
+		Photographie.objects.create(element=element, fichier=image_upload())
 
 		read_response = self.client.get(
 			reverse("element:consulter", kwargs={"numero": element.numero})
@@ -224,5 +225,7 @@ class AjouterElementViewTests(MediaTestCase):
 
 		self.assertEqual(read_response.status_code, 200)
 		self.assertContains(read_response, element.libelle)
+		self.assertContains(read_response, 'class="element-photos"')
+		self.assertContains(read_response, 'alt="Ancien lavoir"')
 		self.assertEqual(edit_response.status_code, 200)
 		self.assertContains(edit_response, "Modifier un élément de patrimoine")

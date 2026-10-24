@@ -273,6 +273,16 @@ textarea:focus {
     width: 72px;
 }
 
+.element-photos figure {
+    margin: 0 0 1rem;
+}
+
+.element-photos img {
+    display: block;
+    height: auto;
+    max-width: 100%;
+}
+
 .heritage-pin-wrapper {
     background: transparent;
     border: 0;
