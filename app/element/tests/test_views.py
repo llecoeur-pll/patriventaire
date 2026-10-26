@@ -19,7 +19,8 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertTemplateUsed(response, "404.html")
 		self.assertContains(
 			response,
-			"Erreur 404 : vous êtes perdus dans les chemins du Val d'Orne...",
+			"Cette page est introuvable, mais pas de panique : même les panneaux "
+			"se trompent parfois de chemin dans le Val d'Orne.",
 			status_code=404,
 		)
 		self.assertContains(response, "Retrouver la carte", status_code=404)
@@ -81,6 +82,9 @@ class AjouterElementViewTests(MediaTestCase):
 
 		self.assertEqual(response.status_code, 200)
 		self.assertContains(response, "Ajouter un élément de patrimoine")
+		self.assertContains(response, 'class="alert alert-info"')
+		self.assertContains(response, "plan local d'urbanisme intercommunal")
+		self.assertContains(response, "partager votre expérience avec cet élément")
 		self.assertContains(response, "Description et histoire")
 		self.assertContains(response, "photographies-TOTAL_FORMS")
 		self.assertContains(response, 'id="map-widget"')

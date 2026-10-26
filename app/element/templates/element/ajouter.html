@@ -8,6 +8,10 @@
 
 {% block content %}
     <h1>{{ page_title|default:"Ajouter un élément de patrimoine" }}</h1>
+    <div class="alert alert-info" role="alert">
+        <p>Ajoutez un élément de patrimoine : une ruine, un bâtiment agricole qui pourrait changer de destination pour devenir un logement, un logement vacant ou tout autre élément utile pour le plan local d'urbanisme intercommunal.</p>
+        <p class="mb-0">Le décrire aussi précisément que possible est un vrai plus. Pour documenter l'histoire de notre territoire, vous pouvez également ajouter des remarques personnelles et partager votre expérience avec cet élément.</p>
+    </div>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ element_form.non_field_errors }}
