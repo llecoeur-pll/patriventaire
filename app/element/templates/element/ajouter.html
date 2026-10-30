@@ -258,11 +258,37 @@
                         [this.latitude, this.longitude],
                         13
                     );
-                    L.tileLayer("https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}", {
+                    this.map.createPane("planIgnPane");
+                    this.map.getPane("planIgnPane").style.zIndex = "250";
+                    this.map.createPane("detailOverlaysPane");
+                    this.map.getPane("detailOverlaysPane").style.zIndex = "300";
+                    const wmtsUrl = (layer, format) =>
+                        `https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=${layer}&STYLE=normal&FORMAT=${format}&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}`;
+                    const tileOptions = {
                         attribution: "&copy; IGN - Géoportail",
                         maxZoom: 19,
                         referrerPolicy: "strict-origin-when-cross-origin",
-                    }).addTo(this.map);
+                    };
+                    const aerialLayer = L.tileLayer(
+                        wmtsUrl("ORTHOIMAGERY.ORTHOPHOTOS", "image/jpeg"),
+                        tileOptions
+                    ).addTo(this.map);
+                    const overlayLayers = {
+                        "Limites administratives": L.tileLayer(
+                            wmtsUrl("LIMITES_ADMINISTRATIVES_EXPRESS.LATEST", "image/png"),
+                            { ...tileOptions, pane: "detailOverlaysPane" }
+                        ),
+                        "Parcelles cadastrales": L.tileLayer(
+                            wmtsUrl("CADASTRALPARCELS.PARCELLAIRE_EXPRESS", "image/png"),
+                            { ...tileOptions, pane: "detailOverlaysPane" }
+                        ),
+                        "Plan IGN": L.tileLayer(
+                            wmtsUrl("GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2", "image/png"),
+                            { ...tileOptions, pane: "planIgnPane" }
+                        ),
+                    };
+                    L.control.layers({ "Photographies aériennes": aerialLayer }, overlayLayers)
+                        .addTo(this.map);
                     this.marker = L.marker([this.latitude, this.longitude]).addTo(this.map);
 
                     existingElements.forEach((element) => {
