@@ -273,11 +273,12 @@
                         wmtsUrl("ORTHOIMAGERY.ORTHOPHOTOS", "image/jpeg"),
                         tileOptions
                     ).addTo(this.map);
+                    const administrativeLayer = L.tileLayer(
+                        wmtsUrl("LIMITES_ADMINISTRATIVES_EXPRESS.LATEST", "image/png"),
+                        { ...tileOptions, pane: "detailOverlaysPane" }
+                    ).addTo(this.map);
                     const overlayLayers = {
-                        "Limites administratives": L.tileLayer(
-                            wmtsUrl("LIMITES_ADMINISTRATIVES_EXPRESS.LATEST", "image/png"),
-                            { ...tileOptions, pane: "detailOverlaysPane" }
-                        ),
+                        "Limites administratives": administrativeLayer,
                         "Parcelles cadastrales": L.tileLayer(
                             wmtsUrl("CADASTRALPARCELS.PARCELLAIRE_EXPRESS", "image/png"),
                             { ...tileOptions, pane: "detailOverlaysPane" }
