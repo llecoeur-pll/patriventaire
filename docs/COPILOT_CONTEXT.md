@@ -23,7 +23,7 @@ Technologies :
  
 
 Application de Cartograhie :
- - OpenStreetMap
+ - Géoportail (photographies aériennes IGN)
  
 
 Arborescence :

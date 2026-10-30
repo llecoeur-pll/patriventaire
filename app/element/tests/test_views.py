@@ -31,7 +31,8 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertEqual(response.status_code, 200)
 		self.assertContains(response, "<h1>Carte</h1>", html=True)
 		self.assertContains(response, 'id="map-widget"')
-		self.assertContains(response, "openstreetmap.org")
+		self.assertContains(response, "data.geopf.fr/wmts")
+		self.assertContains(response, "ORTHOIMAGERY.ORTHOPHOTOS")
 		self.assertContains(response, "existing-elements-data")
 
 	def test_map_uses_thumbnail_for_existing_public_elements(self) -> None:
@@ -92,7 +93,8 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(response, 'aria-label="Me localiser"')
 		self.assertContains(response, "📍")
 		self.assertContains(response, 'aria-live="polite"')
-		self.assertContains(response, "openstreetmap.org")
+		self.assertContains(response, "data.geopf.fr/wmts")
+		self.assertContains(response, "ORTHOIMAGERY.ORTHOPHOTOS")
 		self.assertContains(response, 'name="referrer"')
 		self.assertContains(response, "strict-origin-when-cross-origin")
 		self.assertContains(response, "referrerPolicy")
