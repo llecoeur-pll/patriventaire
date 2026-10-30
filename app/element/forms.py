@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from django import forms
-from django.forms import BaseInlineFormSet, inlineformset_factory
+from django.forms import inlineformset_factory
 
 from .models import Element, Photographie
 
@@ -61,23 +61,9 @@ class ElementForm(forms.ModelForm):
 		}
 
 
-class PhotographiesFormSet(BaseInlineFormSet):
-	"""Require at least one photograph for every submitted element."""
-
-	def clean(self) -> None:
-		super().clean()
-		if any(self.errors):
-			return
-		if not any(form.cleaned_data and not form.cleaned_data.get("DELETE") for form in self.forms):
-			raise forms.ValidationError(
-				"Ajoutez au moins une photographie de l'élément."
-			)
-
-
 PhotographieFormSet = inlineformset_factory(
 	Element,
 	Photographie,
-	formset=PhotographiesFormSet,
 	fields=("fichier",),
 	extra=1,
 	can_delete=False,

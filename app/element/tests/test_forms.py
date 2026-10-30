@@ -59,7 +59,7 @@ class ElementFormTests(MediaTestCase):
 
 
 class PhotographieFormSetTests(MediaTestCase):
-	def test_formset_requires_at_least_one_photograph(self) -> None:
+	def test_formset_accepts_no_photograph(self) -> None:
 		element = Element.objects.create(**element_data())
 		formset = PhotographieFormSet(
 			data={
@@ -71,8 +71,7 @@ class PhotographieFormSetTests(MediaTestCase):
 			instance=element,
 		)
 
-		self.assertFalse(formset.is_valid())
-		self.assertIn("Ajoutez au moins une photographie", str(formset.non_form_errors()))
+		self.assertTrue(formset.is_valid(), formset.errors)
 
 	def test_formset_accepts_a_photograph(self) -> None:
 		element = Element.objects.create(**element_data())

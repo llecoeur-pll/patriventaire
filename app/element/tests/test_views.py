@@ -142,7 +142,7 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(response, "photo_url")
 		self.assertContains(response, "/media/photos/")
 
-	def test_element_requires_a_photograph(self) -> None:
+	def test_element_can_be_created_without_a_photograph(self) -> None:
 		response = self.client.post(
 			reverse("element:ajouter"),
 			form_data(
@@ -155,9 +155,13 @@ class AjouterElementViewTests(MediaTestCase):
 			),
 		)
 
-		self.assertEqual(response.status_code, 200)
-		self.assertContains(response, "Ajoutez au moins une photographie")
-		self.assertFalse(Element.objects.exists())
+		self.assertRedirects(
+			response,
+			reverse("element:ajouter"),
+			fetch_redirect_response=False,
+		)
+		self.assertEqual(Element.objects.count(), 1)
+		self.assertFalse(Photographie.objects.exists())
 
 	def test_element_and_photograph_are_created(self) -> None:
 		data = form_data(
