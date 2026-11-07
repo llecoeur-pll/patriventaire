@@ -5,7 +5,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from .utils import element_data
-from ..models import Element
+from ..models import Categorie, Element
 
 
 class ElementAdminTests(TestCase):
@@ -26,6 +26,8 @@ class ElementAdminTests(TestCase):
 		response = self.client.get(self.changelist_url)
 
 		self.assertContains(response, f'name="_validate_element" value="{element.pk}"')
+		self.assertContains(response, "48.750000")
+		self.assertContains(response, "-0.250000")
 		self.assertContains(response, "Valider", count=1)
 		csrf_token = response.cookies["csrftoken"].value
 
@@ -49,3 +51,39 @@ class ElementAdminTests(TestCase):
 		element.refresh_from_db()
 		self.assertTrue(element.is_valide)
 		self.assertNotContains(self.client.get(self.changelist_url), "Valider")
+
+
+class CategorieAdminTests(TestCase):
+	def setUp(self) -> None:
+		self.client = Client()
+		admin_user = get_user_model().objects.create_superuser(
+			username="admin",
+			email="admin@example.com",
+			password="test-password",
+		)
+		self.client.force_login(admin_user)
+
+	def test_category_color_is_displayed_as_a_swatch(self) -> None:
+		Categorie.objects.create(
+			libelle="Catégorie de test",
+			icone="🧪",
+			couleur="#123456",
+		)
+
+		response = self.client.get(reverse("admin:element_categorie_changelist"))
+
+		self.assertContains(response, "background-color: #123456;")
+		self.assertContains(response, 'aria-label="Couleur #123456"')
+		self.assertNotContains(response, '<td class="field-couleur_preview">#123456</td>')
+
+	def test_invalid_color_is_displayed_as_escaped_text(self) -> None:
+		Categorie.objects.create(
+			libelle="Couleur invalide",
+			icone="⚠️",
+			couleur='"><sc',
+		)
+
+		response = self.client.get(reverse("admin:element_categorie_changelist"))
+
+		self.assertContains(response, "&quot;&gt;&lt;sc")
+		self.assertNotContains(response, 'background-color: "><sc;')

@@ -1,3 +1,4 @@
+import re
 from typing import Any
 
 from django.contrib import admin, messages
@@ -26,6 +27,8 @@ class ElementAdmin(admin.ModelAdmin):
 		"libelle",
 		"categorie",
 		"commune",
+		"latitude",
+		"longitude",
 		"is_valide",
 		"validation_action",
 		"date_ajout",
@@ -81,9 +84,23 @@ class ElementAdmin(admin.ModelAdmin):
 class CategorieAdmin(admin.ModelAdmin):
 	"""Admin interface for adding and editing categories."""
 
-	list_display = ("libelle", "icone", "couleur", "element_count")
+	list_display = ("libelle", "icone", "couleur_preview", "element_count")
 	search_fields = ("libelle", "icone", "couleur")
 	ordering = ("libelle",)
+
+	@admin.display(description="couleur")
+	def couleur_preview(self, categorie: Categorie) -> str:
+		if not re.fullmatch(r"#[0-9A-Fa-f]{6}", categorie.couleur):
+			return format_html("{}", categorie.couleur)
+		return format_html(
+			'<span title="{}" aria-label="Couleur {}" '
+			'style="display: inline-block; width: 1em; height: 1em; '
+			'background-color: {}; border: 1px solid #888; '
+			'border-radius: 50%; vertical-align: middle;"></span>',
+			categorie.couleur,
+			categorie.couleur,
+			categorie.couleur,
+		)
 
 	@admin.display(description="éléments")
 	def element_count(self, categorie: Categorie) -> int:
