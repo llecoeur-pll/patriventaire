@@ -3,18 +3,51 @@
 {% block title %}{{ element.libelle }}{% endblock %}
 
 {% block content %}
-        <h1>{{ element.libelle }}</h1>
-        <p>Numéro : {{ element.numero }}</p>
-        <p>Catégorie : {{ element.categorie.icone }} {{ element.categorie.libelle }}</p>
-        <p>Commune : {{ element.commune }}</p>
-        <p>Coordonnées : {{ element.latitude }}, {{ element.longitude }}</p>
-        <p>{{ element.description }}</p>
-        <h2>Photographies</h2>
-        <div class="element-photos">
-            {% for photographie in element.photographies.all %}
-                <figure>
-                    <img src="{{ photographie.fichier.url }}" alt="{{ element.libelle }}">
-                </figure>
-            {% endfor %}
-        </div>
+    <article class="element-detail">
+        <header class="element-detail-header">
+            <p class="element-number">Élément n° {{ element.numero }}</p>
+            <h1>{{ element.libelle }}</h1>
+        </header>
+
+        <dl class="element-meta" aria-label="Informations sur l’élément">
+            <div class="element-meta-item">
+                <dt>Catégorie</dt>
+                <dd><span aria-hidden="true">{{ element.categorie.icone }}</span> {{ element.categorie.libelle }}</dd>
+            </div>
+            <div class="element-meta-item">
+                <dt>Commune</dt>
+                <dd>{{ element.commune }}</dd>
+            </div>
+            <div class="element-meta-item">
+                <dt>Coordonnées</dt>
+                <dd><span>Latitude {{ element.latitude }}</span><span>Longitude {{ element.longitude }}</span></dd>
+            </div>
+        </dl>
+
+        <section class="element-description" aria-labelledby="element-description-heading">
+            <h2 id="element-description-heading">Description</h2>
+            <p>{{ element.description }}</p>
+        </section>
+
+        <section class="element-photo-section" aria-labelledby="element-photos-heading">
+            <h2 id="element-photos-heading">Photographies</h2>
+            {% with photographs=element.photographies.all %}
+                {% if photographs %}
+                    <div class="element-photos">
+                        {% for photographie in photographs %}
+                            <figure>
+                                <img
+                                    src="{{ photographie.fichier.url }}"
+                                    alt="Photographie {{ forloop.counter }} de {{ element.libelle }}"
+                                >
+                                <figcaption>Photographie {{ forloop.counter }}</figcaption>
+                            </figure>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="element-no-photos">Aucune photographie n’est disponible pour cet élément.</p>
+                {% endif %}
+            {% endwith %}
+        </section>
+    </article>
 {% endblock %}

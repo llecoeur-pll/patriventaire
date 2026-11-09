@@ -254,6 +254,23 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertEqual(read_response.status_code, 200)
 		self.assertContains(read_response, element.libelle)
 		self.assertContains(read_response, 'class="element-photos"')
-		self.assertContains(read_response, 'alt="Ancien lavoir"')
+		self.assertContains(
+			read_response,
+			'alt="Photographie 1 de Ancien lavoir"',
+		)
+		self.assertContains(read_response, 'aria-labelledby="element-photos-heading"')
+		self.assertContains(read_response, "Coordonnées")
 		self.assertEqual(edit_response.status_code, 200)
 		self.assertContains(edit_response, "Modifier un élément de patrimoine")
+
+	def test_element_detail_explains_when_there_are_no_photos(self) -> None:
+		element = Element.objects.create(**element_data())
+
+		response = self.client.get(
+			reverse("element:consulter", kwargs={"numero": element.numero})
+		)
+
+		self.assertContains(
+			response,
+			"Aucune photographie n’est disponible pour cet élément.",
+		)
