@@ -72,6 +72,12 @@ def carte(request: HttpRequest) -> HttpResponse:
 	)
 
 
+def a_propos(request: HttpRequest) -> HttpResponse:
+	"""Display static help about the inventory and how to contribute."""
+
+	return render(request, "element/a_propos.html")
+
+
 def consulter_element(request: HttpRequest, numero: int) -> HttpResponse:
 	"""Display an element using its public number."""
 

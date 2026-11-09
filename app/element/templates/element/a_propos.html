@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Aide{% endblock %}
+
+{% block content %}
+    <article class="about-page">
+        <header class="element-detail-header">
+            <p class="element-number">Inventaire participatif</p>
+            <h1>Aide</h1>
+        </header>
+
+        <p class="about-intro">
+            L’inventaire du patrimoine de Putanges le Lac rassemble les éléments
+            remarquables du territoire grâce aux contributions de ses habitants
+            et de ses visiteurs.
+        </p>
+
+        <section class="about-section" aria-labelledby="about-map-heading">
+            <h2 id="about-map-heading">Explorer la carte</h2>
+            <p>
+                La carte présente les éléments publiés après vérification. Sélectionnez
+                un marqueur pour découvrir le nom, la catégorie et la commune de
+                l’élément, puis ouvrir sa fiche détaillée.
+            </p>
+            <p>
+                Plusieurs fonds de carte sont disponibles, notamment les photographies
+                aériennes, le plan IGN et les parcelles cadastrales.
+            </p>
+        </section>
+
+        <section class="about-section" aria-labelledby="about-contribute-heading">
+            <h2 id="about-contribute-heading">Contribuer à l’inventaire</h2>
+            <p>
+                Vous connaissez un lavoir, une mare, une fontaine, un arbre remarquable,
+                une ruine ou un autre élément du patrimoine local ? Utilisez le bouton
+                <strong>« Ajouter »</strong> pour proposer une fiche.
+            </p>
+            <ol>
+                <li>Donnez un nom à l’élément et choisissez sa catégorie et sa commune.</li>
+                <li>Placez-le sur la carte et décrivez ce qui le rend intéressant.</li>
+                <li>Ajoutez une ou plusieurs photographies pour le documenter.</li>
+            </ol>
+            <p>
+                Les propositions sont examinées avant leur publication sur la carte.
+                Une adresse courriel peut être fournie pour recevoir un message de
+                confirmation, mais elle est facultative.
+            </p>
+        </section>
+
+        <section class="about-section" aria-labelledby="about-photos-heading">
+            <h2 id="about-photos-heading">Compléter une fiche</h2>
+            <p>
+                Chaque fiche publique peut recevoir des photographies supplémentaires.
+                Ouvrez la fiche de l’élément et utilisez la zone d’ajout de photos pour
+                sélectionner des images, les déposer dans la zone ou prendre une photo
+                avec un appareil mobile.
+            </p>
+        </section>
+
+        <p class="about-action">
+            <a class="btn btn-primary" href="{% url 'element:index' %}">Voir la carte</a>
+            <a class="btn btn-outline-primary" href="{% url 'element:ajouter' %}">➕ Ajouter un élément</a>
+        </p>
+    </article>
+{% endblock %}

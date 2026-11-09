@@ -9,6 +9,7 @@ app_name = "element"
 urlpatterns = [
 	path("", views.carte, name="index"),
 	path("ajouter/", views.ajouter_element, name="ajouter"),
+	path("a-propos/", views.a_propos, name="a_propos"),
 	path("carte", views.carte, name="carte"),
 	path("element/<int:numero>/", views.consulter_element, name="consulter"),
 	path(

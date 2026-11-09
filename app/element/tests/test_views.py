@@ -44,6 +44,16 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(response, "GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2")
 		self.assertContains(response, "existing-elements-data")
 
+	def test_about_page_explains_how_to_use_the_inventory(self) -> None:
+		response = self.client.get(reverse("element:a_propos"))
+
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "<h1>Aide</h1>", html=True)
+		self.assertContains(response, "Explorer la carte")
+		self.assertContains(response, "Contribuer à l’inventaire")
+		self.assertContains(response, "Compléter une fiche")
+		self.assertContains(response, 'href="/a-propos/"')
+
 	def test_map_uses_thumbnail_for_existing_public_elements(self) -> None:
 		element = Element.objects.create(**element_data(is_valide=True))
 		photo = Photographie.objects.create(element=element, fichier=image_upload())

@@ -388,6 +388,46 @@ textarea:focus {
     padding: 1rem;
 }
 
+.about-page {
+    margin-inline: auto;
+    max-width: 860px;
+}
+
+.about-intro {
+    background: #f2f8ec;
+    border-left: 4px solid var(--primary);
+    border-radius: 0 8px 8px 0;
+    font-size: 1.1rem;
+    padding: 1rem 1.25rem;
+}
+
+.about-section {
+    margin-top: 2rem;
+}
+
+.about-section h2 {
+    border-left: 4px solid var(--primary);
+    font-size: 1.35rem;
+    margin-bottom: 1rem;
+    padding-left: 0.75rem;
+}
+
+.about-section p,
+.about-section li {
+    line-height: 1.7;
+}
+
+.about-section ol {
+    padding-left: 1.5rem;
+}
+
+.about-action {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 2rem 0 0;
+}
+
 .heritage-pin-wrapper {
     background: transparent;
     border: 0;
