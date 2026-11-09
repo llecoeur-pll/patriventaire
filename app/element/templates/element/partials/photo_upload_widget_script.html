@@ -1,0 +1,95 @@
+<script>
+    (() => {
+        const dropzone = document.getElementById("photo-dropzone");
+        const picker = document.getElementById("photo-picker");
+        const formsContainer = document.getElementById("photo-forms");
+        const cameraPicker = document.getElementById("camera-picker");
+        const cameraButton = document.getElementById("camera-button");
+        const emptyFormTemplate = document.getElementById("empty-photo-form");
+        const totalFormsInput = document.getElementById(
+            "id_{{ photographie_formset.prefix }}-TOTAL_FORMS"
+        );
+
+        const updatePreview = (form, file) => {
+            const preview = form.querySelector("[data-photo-preview]");
+            preview.replaceChildren();
+            const image = document.createElement("img");
+            image.alt = file.name;
+            image.className = "photo-preview-image";
+            image.src = URL.createObjectURL(file);
+            image.addEventListener("load", () => URL.revokeObjectURL(image.src), {
+                once: true,
+            });
+            preview.append(image);
+            const filename = document.createElement("span");
+            filename.textContent = file.name;
+            preview.append(filename);
+        };
+
+        const emptyPhotoForm = () => {
+            const form = formsContainer.querySelector(
+                "[data-photo-form]:not([data-photo-selected])"
+            );
+            return form || addPhotoForm();
+        };
+
+        const addPhotoForm = () => {
+            const index = Number(totalFormsInput.value);
+            const fragment = emptyFormTemplate.content.cloneNode(true);
+            const form = fragment.querySelector("[data-photo-form]");
+            form.innerHTML = form.innerHTML.replaceAll("__prefix__", index);
+            formsContainer.append(form);
+            totalFormsInput.value = index + 1;
+            return form;
+        };
+
+        const assignFiles = (files) => {
+            Array.from(files).forEach((file) => {
+                if (!file.type.startsWith("image/")) {
+                    return;
+                }
+                const form = emptyPhotoForm();
+                const input = form.querySelector('input[type="file"]');
+                const transfer = new DataTransfer();
+                transfer.items.add(file);
+                input.files = transfer.files;
+                form.dataset.photoSelected = "true";
+                updatePreview(form, file);
+            });
+        };
+
+        cameraButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            cameraPicker.click();
+        });
+        cameraPicker.addEventListener("change", () => {
+            assignFiles(cameraPicker.files);
+            cameraPicker.value = "";
+        });
+
+        ["dragenter", "dragover"].forEach((eventName) => {
+            dropzone.addEventListener(eventName, (event) => {
+                event.preventDefault();
+                dropzone.classList.add("is-dragging");
+            });
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+            dropzone.addEventListener(eventName, (event) => {
+                event.preventDefault();
+                dropzone.classList.remove("is-dragging");
+            });
+        });
+        dropzone.addEventListener("drop", (event) => assignFiles(event.dataTransfer.files));
+        dropzone.addEventListener("click", () => picker.click());
+        dropzone.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                picker.click();
+            }
+        });
+        picker.addEventListener("change", () => {
+            assignFiles(picker.files);
+            picker.value = "";
+        });
+    })();
+</script>

@@ -49,5 +49,20 @@
                 {% endif %}
             {% endwith %}
         </section>
+
+        <section class="element-photo-upload" aria-labelledby="element-photo-upload-heading">
+            <h2 id="element-photo-upload-heading">Ajouter des photographies</h2>
+            <p>Vous pouvez contribuer à cette fiche en partageant une ou plusieurs photos.</p>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ photographie_formset.non_form_errors }}
+                {% include "element/partials/photo_upload_widget.html" %}
+                <button class="btn btn-primary" type="submit">Ajouter les photos</button>
+            </form>
+        </section>
     </article>
+{% endblock %}
+
+{% block extra_scripts %}
+    {% include "element/partials/photo_upload_widget_script.html" %}
 {% endblock %}

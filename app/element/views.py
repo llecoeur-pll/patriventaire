@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from .forms import ElementForm, PhotographieFormSet
-from .models import Element
+from .models import Element, Photographie
 
 
 def ajouter_element(request: HttpRequest) -> HttpResponse:
@@ -76,7 +76,28 @@ def consulter_element(request: HttpRequest, numero: int) -> HttpResponse:
 	"""Display an element using its public number."""
 
 	element = get_object_or_404(Element, numero=numero)
-	return render(request, "element/consulter.html", {"element": element})
+	if request.method == "POST":
+		photographie_formset = PhotographieFormSet(
+			request.POST,
+			request.FILES,
+			instance=element,
+			queryset=Photographie.objects.none(),
+		)
+		if photographie_formset.is_valid():
+			with transaction.atomic():
+				photographie_formset.save()
+			messages.success(request, "Les photographies ont été ajoutées à la fiche.")
+			return redirect("element:consulter", numero=element.numero)
+	else:
+		photographie_formset = PhotographieFormSet(
+			instance=element,
+			queryset=Photographie.objects.none(),
+		)
+	return render(
+		request,
+		"element/consulter.html",
+		{"element": element, "photographie_formset": photographie_formset},
+	)
 
 
 def modifier_element(request: HttpRequest, jeton_ecriture: str) -> HttpResponse:

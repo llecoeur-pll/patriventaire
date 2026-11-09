@@ -274,3 +274,37 @@ class AjouterElementViewTests(MediaTestCase):
 			response,
 			"Aucune photographie n’est disponible pour cet élément.",
 		)
+
+	def test_element_detail_reuses_photo_upload_widget(self) -> None:
+		element = Element.objects.create(**element_data())
+
+		response = self.client.get(
+			reverse("element:consulter", kwargs={"numero": element.numero})
+		)
+
+		self.assertContains(response, "Déposez vos photos ici")
+		self.assertContains(response, 'id="photo-dropzone"')
+		self.assertContains(response, "Prendre une photo")
+		self.assertContains(response, "Ajouter les photos")
+
+	def test_element_detail_accepts_photos_without_changing_element_fields(self) -> None:
+		element = Element.objects.create(**element_data())
+		Photographie.objects.create(element=element, fichier=image_upload())
+		url = reverse("element:consulter", kwargs={"numero": element.numero})
+
+		response = self.client.post(
+			url,
+			{
+				"photographies-TOTAL_FORMS": "1",
+				"photographies-INITIAL_FORMS": "0",
+				"photographies-MIN_NUM_FORMS": "0",
+				"photographies-MAX_NUM_FORMS": "1000",
+				"photographies-0-fichier": image_upload(),
+			},
+		)
+
+		self.assertRedirects(response, url)
+		self.assertEqual(element.photographies.count(), 2)
+		element.refresh_from_db()
+		self.assertEqual(element.libelle, "Ancien lavoir")
+		self.assertEqual(element.description, "Un ancien lavoir communal.")

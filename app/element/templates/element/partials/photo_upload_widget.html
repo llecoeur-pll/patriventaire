@@ -1,0 +1,61 @@
+<fieldset>
+    <legend>Photographies</legend>
+    {{ photographie_formset.management_form }}
+    {{ photographie_formset.non_form_errors }}
+    <div id="photo-dropzone" class="photo-dropzone" tabindex="0" role="button"
+       aria-controls="photo-picker" aria-describedby="photo-dropzone-help">
+        <strong>Déposez vos photos ici</strong> ou cliquez pour les sélectionner
+        <small id="photo-dropzone-help">Vous pouvez ajouter plusieurs photos.</small>
+        <button id="camera-button" class="btn btn-outline-primary mobile-camera-button" type="button">
+            Prendre une photo
+        </button>
+    </div>
+    <input id="photo-picker" class="d-none" type="file" accept="image/*" multiple>
+    <input id="camera-picker" class="d-none" type="file" accept="image/*" capture="environment">
+
+    <div id="photo-forms">
+        {% for photo_form in photographie_formset %}
+            <div class="photo-form" data-photo-form{% if photo_form.instance.pk %} data-photo-selected="true"{% endif %}>
+                {% for field in photo_form %}
+                    {% if field.name == "fichier" %}
+                        <div class="visually-hidden">
+                            {{ field }}
+                        </div>
+                        {{ field.errors }}
+                    {% elif field.is_hidden %}
+                        {{ field }}
+                    {% else %}
+                        <p>
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {{ field.errors }}
+                        </p>
+                    {% endif %}
+                {% endfor %}
+                <div class="photo-preview" data-photo-preview></div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <template id="empty-photo-form">
+        <div class="photo-form" data-photo-form>
+            {% for field in photographie_formset.empty_form %}
+                {% if field.name == "fichier" %}
+                    <div class="visually-hidden">
+                        {{ field }}
+                    </div>
+                    {{ field.errors }}
+                {% elif field.is_hidden %}
+                    {{ field }}
+                {% else %}
+                    <p>
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {{ field.errors }}
+                    </p>
+                {% endif %}
+            {% endfor %}
+            <div class="photo-preview" data-photo-preview></div>
+        </div>
+    </template>
+</fieldset>
