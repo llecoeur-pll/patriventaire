@@ -12,6 +12,7 @@ urlpatterns = [
 	path("a-propos/", views.a_propos, name="a_propos"),
 	path("carte", views.carte, name="carte"),
 	path("element/<int:numero>/", views.consulter_element, name="consulter"),
+	path("rgpd/", views.rgpd, name="rgpd"),
 	path(
 		"element/modifier/<str:jeton_ecriture>/",
 		views.modifier_element,

@@ -78,6 +78,12 @@ def a_propos(request: HttpRequest) -> HttpResponse:
 	return render(request, "element/a_propos.html")
 
 
+def rgpd(request: HttpRequest) -> HttpResponse:
+	"""Display privacy information about personal data processing."""
+
+	return render(request, "element/rgpd.html")
+
+
 def consulter_element(request: HttpRequest, numero: int) -> HttpResponse:
 	"""Display an element using its public number."""
 

@@ -428,6 +428,54 @@ textarea:focus {
     margin: 2rem 0 0;
 }
 
+.legal-page {
+    margin-inline: auto;
+    max-width: 860px;
+}
+
+.legal-intro {
+    background: #f2f8ec;
+    border-left: 4px solid var(--primary);
+    border-radius: 0 8px 8px 0;
+    font-size: 1.1rem;
+    padding: 1rem 1.25rem;
+}
+
+.legal-section {
+    margin-top: 2rem;
+}
+
+.legal-section h2 {
+    border-left: 4px solid var(--primary);
+    font-size: 1.35rem;
+    margin-bottom: 1rem;
+    padding-left: 0.75rem;
+}
+
+.legal-section p {
+    line-height: 1.7;
+}
+
+.legal-section address {
+    font-style: normal;
+    line-height: 1.7;
+}
+
+.legal-notice {
+    background: #fff8e1;
+    border: 1px solid #f4b400;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.legal-updated {
+    border-top: 1px solid var(--border);
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+}
+
 .heritage-pin-wrapper {
     background: transparent;
     border: 0;

@@ -54,6 +54,18 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(response, "Compléter une fiche")
 		self.assertContains(response, 'href="/a-propos/"')
 
+	def test_privacy_page_displays_provided_contact_and_incomplete_details(self) -> None:
+		response = self.client.get(reverse("element:rgpd"))
+
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "<h1>Protection des données personnelles</h1>", html=True)
+		self.assertContains(response, "Isabelle Lecomte")
+		self.assertContains(response, "accueil@putangeslelac.fr")
+		self.assertContains(response, "Graines de Bocage")
+		self.assertContains(response, "restent à définir par la commune")
+		self.assertContains(response, "⚖️ RGPD")
+		self.assertContains(response, 'href="/rgpd/"')
+
 	def test_map_uses_thumbnail_for_existing_public_elements(self) -> None:
 		element = Element.objects.create(**element_data(is_valide=True))
 		photo = Photographie.objects.create(element=element, fichier=image_upload())
