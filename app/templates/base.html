@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-    <title>{% block title %}Patriventaire{% endblock %}</title>
+    <title>{% block title %}Inventaire du patrimoine de Putanges le Lac{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,9 +16,9 @@
 <body class="{% block body_class %}{% endblock %}">
     <header class="site-header">
         <nav class="container navbar navbar-expand-sm py-3" aria-label="Navigation principale">
-            <a class="site-brand me-4" href="{% url 'element:index' %}">Patrimoine</a>
+            <a class="site-brand me-4" href="{% url 'element:index' %}">Patrimoine Putanges le Lac</a>
             <div class="navbar-nav">
-                <a class="site-nav-link nav-link px-0" href="{% url 'element:ajouter' %}">Ajouter un élément</a>
+                <a class="btn btn-primary" href="{% url 'element:ajouter' %}">➕ Ajouter</a>
             </div>
         </nav>
     </header>
