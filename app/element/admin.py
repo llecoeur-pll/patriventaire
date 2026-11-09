@@ -1,4 +1,5 @@
 import re
+from pathlib import PurePosixPath
 from typing import Any
 
 from django.contrib import admin, messages
@@ -10,12 +11,37 @@ from django.utils.html import format_html
 from .models import Categorie, Commune, Element, Photographie
 
 
+def _photographie_thumbnail_url(photographie: Photographie) -> str:
+	"""Return the stored thumbnail URL, falling back to the original image."""
+
+	photo_path = PurePosixPath(photographie.fichier.name)
+	thumbnail_path = str(photo_path.with_name(f"mini_{photo_path.name}"))
+	storage = photographie.fichier.storage
+	if storage.exists(thumbnail_path):
+		return storage.url(thumbnail_path)
+	return photographie.fichier.url
+
+
 class PhotographieInline(admin.TabularInline):
 	"""Manage an element's photographs from its admin page."""
 
 	model = Photographie
 	extra = 1
-	fields = ("fichier",)
+	fields = ("thumbnail", "fichier")
+	readonly_fields = ("thumbnail",)
+
+	@admin.display(description="aperçu")
+	def thumbnail(self, photographie: Photographie) -> str:
+		"""Return a proportional thumbnail for the element's photograph."""
+
+		if not photographie.fichier:
+			return "-"
+		return format_html(
+			'<img src="{}" alt="{}" style="max-height: 120px; max-width: 180px; '
+			'width: auto; height: auto;">',
+			_photographie_thumbnail_url(photographie),
+			str(photographie),
+		)
 
 
 @admin.register(Element)
@@ -140,6 +166,6 @@ class PhotographieAdmin(admin.ModelAdmin):
 			return "-"
 		return format_html(
 			'<img src="{}" alt="{}" style="max-height: 40px; width: auto;">',
-			photographie.fichier.url,
+			_photographie_thumbnail_url(photographie),
 			str(photographie),
 		)
