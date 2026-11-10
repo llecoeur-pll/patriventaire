@@ -42,11 +42,88 @@ class ElementModelTests(MediaTestCase):
 
 	def test_deleting_element_deletes_its_photographs(self) -> None:
 		element = Element.objects.create(**element_data())
-		Photographie.objects.create(element=element, fichier=image_upload())
+		photo = Photographie.objects.create(element=element, fichier=image_upload())
+		other_element = Element.objects.create(
+			**element_data(libelle="Autre élément")
+		)
+		other_photo = Photographie.objects.create(
+			element=other_element,
+			fichier=image_upload(),
+		)
+		original_path = photo.fichier.name
+		thumbnail_path = Path(photo.fichier.path).with_name(
+			f"mini_{Path(photo.fichier.path).name}"
+		)
+		storage = photo.fichier.storage
+		other_thumbnail_path = Path(other_photo.fichier.path).with_name(
+			f"mini_{Path(other_photo.fichier.path).name}"
+		)
 
-		element.delete()
+		with self.captureOnCommitCallbacks(execute=True):
+			element.delete()
 
-		self.assertFalse(Photographie.objects.exists())
+		self.assertEqual(Photographie.objects.count(), 1)
+		self.assertFalse(storage.exists(original_path))
+		self.assertFalse(thumbnail_path.exists())
+		self.assertTrue(other_photo.fichier.storage.exists(other_photo.fichier.name))
+		self.assertTrue(other_thumbnail_path.exists())
+
+	def test_deleting_photo_record_removes_original_and_thumbnail(self) -> None:
+		element = Element.objects.create(**element_data())
+		photo = Photographie.objects.create(element=element, fichier=image_upload())
+		other_photo = Photographie.objects.create(element=element, fichier=image_upload())
+		original_path = photo.fichier.name
+		thumbnail_path = Path(photo.fichier.path).with_name(
+			f"mini_{Path(photo.fichier.path).name}"
+		)
+		storage = photo.fichier.storage
+		other_thumbnail_path = Path(other_photo.fichier.path).with_name(
+			f"mini_{Path(other_photo.fichier.path).name}"
+		)
+
+		with self.captureOnCommitCallbacks(execute=True):
+			photo.delete()
+
+		self.assertFalse(storage.exists(original_path))
+		self.assertFalse(thumbnail_path.exists())
+		self.assertTrue(other_photo.fichier.storage.exists(other_photo.fichier.name))
+		self.assertTrue(other_thumbnail_path.exists())
+
+	def test_bulk_deleting_photos_removes_each_original_and_thumbnail(self) -> None:
+		element = Element.objects.create(**element_data())
+		other_element = Element.objects.create(
+			**element_data(libelle="Autre élément")
+		)
+		photos = [
+			Photographie.objects.create(element=element, fichier=image_upload())
+			for _ in range(2)
+		]
+		other_photo = Photographie.objects.create(
+			element=other_element,
+			fichier=image_upload(),
+		)
+		other_thumbnail_path = Path(other_photo.fichier.path).with_name(
+			f"mini_{Path(other_photo.fichier.path).name}"
+		)
+		paths = [
+			(
+				photo.fichier.storage,
+				photo.fichier.name,
+				Path(photo.fichier.path).with_name(
+					f"mini_{Path(photo.fichier.path).name}"
+				),
+			)
+			for photo in photos
+		]
+
+		with self.captureOnCommitCallbacks(execute=True):
+			Photographie.objects.filter(element=element).delete()
+
+		for storage, original_path, thumbnail_path in paths:
+			self.assertFalse(storage.exists(original_path))
+			self.assertFalse(thumbnail_path.exists())
+		self.assertTrue(other_photo.fichier.storage.exists(other_photo.fichier.name))
+		self.assertTrue(other_thumbnail_path.exists())
 
 	def test_photos_use_configured_directory_and_random_names(self) -> None:
 		element = Element.objects.create(**element_data())

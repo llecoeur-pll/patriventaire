@@ -6,13 +6,15 @@ import secrets
 from io import BytesIO
 from datetime import datetime
 from decimal import Decimal
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from PIL import Image, ImageOps
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
+from django.db import models, transaction
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 
 def generate_edit_token() -> str:
@@ -248,3 +250,29 @@ class Photographie(models.Model):
 		"""Return a human-readable identifier."""
 
 		return f"Photographie de l'élément {self.element_id}"
+
+
+@receiver(post_delete, sender=Photographie)
+def delete_photographie_files(
+	sender: type[Photographie],
+	instance: Photographie,
+	using: str,
+	**kwargs: object,
+) -> None:
+	"""Delete a removed photograph and its thumbnail after the database commits."""
+
+	if not instance.fichier:
+		return
+
+	original_path = instance.fichier.name
+	photo_path = PurePosixPath(original_path)
+	thumbnail_path = str(photo_path.with_name(f"mini_{photo_path.name}"))
+	storage = instance.fichier.storage
+
+	def remove_files() -> None:
+		if sender.objects.using(using).filter(fichier=original_path).exists():
+			return
+		storage.delete(thumbnail_path)
+		storage.delete(original_path)
+
+	transaction.on_commit(remove_files, using=using)
