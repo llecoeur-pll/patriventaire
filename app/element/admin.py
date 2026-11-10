@@ -4,6 +4,7 @@ from typing import Any
 
 from django.contrib import admin, messages
 from django.core.exceptions import PermissionDenied
+from django.db.models import Count
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.utils.html import format_html
@@ -55,6 +56,7 @@ class ElementAdmin(admin.ModelAdmin):
 		"commune",
 		"latitude",
 		"longitude",
+		"photograph_count",
 		"is_valide",
 		"validation_action",
 		"date_ajout",
@@ -94,6 +96,15 @@ class ElementAdmin(admin.ModelAdmin):
 			return redirect(request.get_full_path())
 
 		return super().changelist_view(request, extra_context)
+
+	def get_queryset(self, request: HttpRequest):
+		return super().get_queryset(request).annotate(
+			_photo_count=Count("photographies")
+		)
+
+	@admin.display(description="Photographies", ordering="_photo_count")
+	def photograph_count(self, element: Element) -> int:
+		return element._photo_count
 
 	@admin.display(description="Action")
 	def validation_action(self, element: Element) -> str:

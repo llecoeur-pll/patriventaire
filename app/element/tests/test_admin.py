@@ -55,6 +55,30 @@ class ElementAdminTests(MediaTestCase):
 		self.assertTrue(element.is_valide)
 		self.assertNotContains(self.client.get(self.changelist_url), "Valider")
 
+	def test_changelist_displays_photograph_count_for_each_element(self) -> None:
+		element_with_photos = Element.objects.create(**element_data())
+		for _ in range(2):
+			Photographie.objects.create(
+				element=element_with_photos,
+				fichier=image_upload(),
+			)
+		element_without_photos = Element.objects.create(
+			**element_data(libelle="Élément sans photographie")
+		)
+
+		response = self.client.get(self.changelist_url)
+
+		self.assertContains(
+			response,
+			'<td class="field-photograph_count">2</td>',
+			html=True,
+		)
+		self.assertContains(
+			response,
+			'<td class="field-photograph_count">0</td>',
+			html=True,
+		)
+
 	def test_element_change_page_displays_each_associated_photo(self) -> None:
 		element = Element.objects.create(**element_data())
 		photo_one = Photographie.objects.create(
