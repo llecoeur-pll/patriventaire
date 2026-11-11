@@ -119,6 +119,12 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(response, "partager votre expérience avec cet élément")
 		self.assertContains(response, "Description et histoire")
 		self.assertContains(response, "photographies-TOTAL_FORMS")
+		self.assertContains(
+			response,
+			"Envoi de l'élément et des photos en cours...",
+		)
+		self.assertContains(response, 'id="upload-progress-modal"')
+		self.assertContains(response, "upload-progress-bar")
 		self.assertContains(response, 'id="map-widget"')
 		self.assertContains(response, 'id="geolocate-button"')
 		self.assertContains(response, 'aria-label="Me localiser"')

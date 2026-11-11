@@ -276,6 +276,28 @@ textarea:focus {
     width: 72px;
 }
 
+.upload-progress-bar {
+    animation: upload-progress 1.5s ease-in-out infinite;
+    width: 40%;
+}
+
+@keyframes upload-progress {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(250%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .upload-progress-bar {
+        animation: none;
+        margin-left: 30%;
+    }
+}
+
 .element-detail {
     margin-inline: auto;
     max-width: 960px;
