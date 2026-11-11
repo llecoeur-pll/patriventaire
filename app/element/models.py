@@ -133,6 +133,35 @@ class Element(models.Model):
 		return f"{self.numero} - {self.libelle}"
 
 
+class Histoire(models.Model):
+	"""A historical account associated with a heritage element."""
+
+	id: int = models.BigAutoField(primary_key=True, verbose_name="identifiant")
+	element: Element = models.ForeignKey(
+		Element,
+		on_delete=models.CASCADE,
+		related_name="histoires",
+		verbose_name="élément de patrimoine",
+	)
+	histoire: str = models.TextField(verbose_name="histoire")
+	valide: bool = models.BooleanField(
+		default=False,
+		verbose_name="validée",
+	)
+	created: datetime = models.DateTimeField(
+		auto_now_add=True,
+		verbose_name="date de création",
+	)
+
+	class Meta:
+		ordering = ("created",)
+		verbose_name = "histoire"
+		verbose_name_plural = "histoires"
+
+	def __str__(self) -> str:
+		return f"Histoire de l'élément {self.element_id}"
+
+
 class Commune(models.Model):
 	"""A delegated commune covered by the heritage inventory."""
 

@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 
-from ..models import Categorie, Element, Photographie
+from ..models import Categorie, Element, Histoire, Photographie
 from .utils import MediaTestCase, element_data, image_upload
 
 
@@ -33,6 +33,24 @@ class ElementModelTests(MediaTestCase):
 		element.refresh_from_db()
 
 		self.assertEqual(element.photo_miniature, "miniatures/ancien-lavoir.jpg")
+
+	def test_histoire_defaults_to_unvalidated_and_records_creation_time(self) -> None:
+		element = Element.objects.create(**element_data())
+
+		histoire = Histoire.objects.create(element=element, histoire="Un récit.")
+
+		self.assertFalse(histoire.valide)
+		self.assertIsNotNone(histoire.created)
+		self.assertEqual(element.histoires.get(), histoire)
+		self.assertEqual(str(histoire), f"Histoire de l'élément {element.pk}")
+
+	def test_deleting_element_deletes_its_histories(self) -> None:
+		element = Element.objects.create(**element_data())
+		histoire = Histoire.objects.create(element=element, histoire="Un récit.")
+
+		element.delete()
+
+		self.assertFalse(Histoire.objects.filter(pk=histoire.pk).exists())
 
 	def test_coordinates_outside_allowed_ranges_are_invalid(self) -> None:
 		element = Element(**element_data(latitude=91, longitude=-181))

@@ -6,10 +6,11 @@ spécifications fonctionnelles. Le modèle couvre la saisie publique d'un
 
 ## Vue d'ensemble
 
-Le modèle minimal contient deux entités :
+Le modèle contient les entités suivantes :
 
 ```text
 Element 1 ──────── N Photographie
+        └──────── N Histoire
 ```
 
 - Un `Element` possède un numéro unique et les informations saisies par le
@@ -17,6 +18,8 @@ Element 1 ──────── N Photographie
 - Un `Element` possède également un jeton aléatoire unique, utilisé pour
   accéder à sa fiche en écriture sans authentification.
 - Une `Photographie` appartient à un seul `Element`.
+- Une `Histoire` appartient à un seul `Element` et peut être validée
+  indépendamment de celui-ci.
 - Un élément doit posséder au moins une photographie. Cette règle est
   contrôlée au niveau de la validation du formulaire ou du service de
   création, car elle ne peut pas être garantie par une simple contrainte de
@@ -100,6 +103,18 @@ et ne doit pas être affiché dans l'URL de lecture seule.
 La suppression d'un élément supprime ses photographies rattachées
 (`CASCADE`). Le chemin du fichier est stocké en base ; le contenu binaire est
 stocké dans le stockage média configuré par Django.
+
+## Entité `Histoire`
+
+| Champ | Type Django | Obligatoire | Contraintes / rôle |
+| --- | --- | --- | --- |
+| `id` | `BigAutoField` | Oui | Identifiant technique |
+| `element` | `ForeignKey(Element, on_delete=CASCADE)` | Oui | Élément de patrimoine concerné |
+| `histoire` | `TextField()` | Oui | Récit historique associé à l'élément |
+| `valide` | `BooleanField(default=False)` | Oui | Indique si le récit a été validé |
+| `created` | `DateTimeField(auto_now_add=True)` | Oui | Date et heure de création renseignées automatiquement |
+
+La suppression d'un élément supprime également ses histoires rattachées.
 
 ## Règles d'intégrité et de validation
 

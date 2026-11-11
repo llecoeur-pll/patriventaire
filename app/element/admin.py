@@ -9,7 +9,7 @@ from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.utils.html import format_html
 
-from .models import Categorie, Commune, Element, Photographie
+from .models import Categorie, Commune, Element, Histoire, Photographie
 
 
 def _photographie_thumbnail_url(photographie: Photographie) -> str:
@@ -180,3 +180,14 @@ class PhotographieAdmin(admin.ModelAdmin):
 			_photographie_thumbnail_url(photographie),
 			str(photographie),
 		)
+
+
+@admin.register(Histoire)
+class HistoireAdmin(admin.ModelAdmin):
+	"""Admin interface for reviewing historical accounts."""
+
+	list_display = ("element", "valide", "created")
+	list_filter = ("valide", "created")
+	search_fields = ("element__libelle", "histoire")
+	list_select_related = ("element",)
+	readonly_fields = ("created",)
