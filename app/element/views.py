@@ -174,7 +174,7 @@ def _map_elements_data() -> list[dict[str, Any]]:
 
 	map_elements = []
 	for element in (
-		Element.objects.filter(is_valide=True)
+		Element.objects.filter(is_valide=True, categorie__visible=True)
 		.select_related("categorie")
 		.prefetch_related("photographies")
 	):

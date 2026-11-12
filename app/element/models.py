@@ -97,6 +97,7 @@ class Element(models.Model):
 		verbose_name="validé",
 		help_text="Indique si l'élément peut être affiché publiquement.",
 	)
+	visible: bool = models.BooleanField(default=True, verbose_name="visible")
 
 	class Meta:
 		"""Database metadata and integrity rules for an element."""
@@ -188,6 +189,7 @@ class Categorie(models.Model):
 	libelle: str = models.CharField(max_length=100, unique=True, verbose_name="libellé")
 	icone: str = models.CharField(max_length=8, unique=True, verbose_name="icône")
 	couleur: str = models.CharField(max_length=7, unique=True, verbose_name="couleur")
+	visible: bool = models.BooleanField(default=True, verbose_name="visible")
 
 	class Meta:
 		ordering = ("libelle",)

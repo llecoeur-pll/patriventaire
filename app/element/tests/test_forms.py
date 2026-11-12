@@ -1,7 +1,7 @@
 """Tests for the element forms."""
 
 from ..forms import ElementForm, PhotographieFormSet
-from ..models import Element
+from ..models import Categorie, Element
 from .utils import MediaTestCase, element_data, form_data, image_upload
 
 
@@ -10,6 +10,18 @@ class ElementFormTests(MediaTestCase):
 		form = ElementForm(data=form_data())
 
 		self.assertTrue(form.is_valid(), form.errors)
+
+	def test_add_form_excludes_hidden_categories(self) -> None:
+		hidden_category = Categorie.objects.get(libelle="Lavoir")
+		hidden_category.visible = False
+		hidden_category.save(update_fields=("visible",))
+
+		form = ElementForm()
+
+		self.assertNotIn(
+			hidden_category.pk,
+			[field[0] for field in form.fields["categorie"].choices],
+		)
 
 	def test_form_requires_the_main_fields(self) -> None:
 		form = ElementForm(data={})

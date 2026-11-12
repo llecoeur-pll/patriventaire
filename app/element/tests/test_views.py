@@ -6,7 +6,7 @@ from django.core import mail
 from django.test import override_settings
 from django.urls import reverse
 
-from ..models import Element, Photographie
+from ..models import Categorie, Element, Photographie
 from .utils import MediaTestCase, element_data, form_data, image_upload
 
 
@@ -63,7 +63,7 @@ class AjouterElementViewTests(MediaTestCase):
 		self.assertContains(response, "accueil@putangeslelac.fr")
 		self.assertContains(response, "Graines de Bocage")
 		self.assertContains(response, "restent à définir par la commune")
-		self.assertContains(response, "⚖️ RGPD")
+		self.assertContains(response, "Notice à compléter et à valider par la commune.")
 		self.assertContains(response, 'href="/rgpd/"')
 
 	def test_map_uses_thumbnail_for_existing_public_elements(self) -> None:
@@ -101,6 +101,28 @@ class AjouterElementViewTests(MediaTestCase):
 
 		self.assertNotIn(unvalidated_element.libelle, map_labels)
 		self.assertIn(validated_element.libelle, map_labels)
+
+	def test_map_excludes_elements_in_hidden_categories(self) -> None:
+		hidden_category = Categorie.objects.create(
+			libelle="Catégorie masquée",
+			icone="🙈",
+			couleur="#123456",
+			visible=False,
+		)
+		hidden_category_element = Element.objects.create(
+			**element_data(
+				libelle="Élément d'une catégorie masquée",
+				is_valide=True,
+				categorie=hidden_category,
+			)
+		)
+
+		response = self.client.get(reverse("element:carte"))
+
+		map_labels = {
+			element["libelle"] for element in response.context["existing_elements"]
+		}
+		self.assertNotIn(hidden_category_element.libelle, map_labels)
 
 	def test_index_displays_the_element_form(self) -> None:
 		response = self.client.get(reverse("element:index"))

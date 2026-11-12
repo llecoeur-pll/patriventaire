@@ -26,6 +26,10 @@ class ElementForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.fields["description"].label = "Description et histoire"
+		if self.instance._state.adding:
+			self.fields["categorie"].queryset = self.fields[
+				"categorie"
+			].queryset.filter(visible=True)
 		self.fields["categorie"].choices = [
 			(
 				category.pk,

@@ -19,6 +19,7 @@ class ElementModelTests(MediaTestCase):
 		self.assertTrue(element.jeton_ecriture)
 		self.assertEqual(len(element.jeton_ecriture), 43)
 		self.assertEqual(element.photo_miniature, "")
+		self.assertTrue(element.visible)
 		self.assertIsNotNone(element.date_ajout)
 		self.assertEqual(str(element), f"{element.numero} - Ancien lavoir")
 
@@ -206,3 +207,7 @@ class CategorieModelTests(MediaTestCase):
 		)
 		self.assertEqual(Categorie.objects.values_list("icone", flat=True).distinct().count(), 7)
 		self.assertEqual(Categorie.objects.values_list("couleur", flat=True).distinct().count(), 7)
+		self.assertEqual(
+			set(Categorie.objects.values_list("visible", flat=True)),
+			{True},
+		)
